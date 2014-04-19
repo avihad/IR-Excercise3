@@ -67,6 +67,7 @@ public class Utils {
 
 	    if (!file.exists()) {
 		file.createNewFile();
+		System.out.println("Info: Create new file for output: " + file.getAbsolutePath());
 	    }
 
 	    if (!file.canWrite()) {
@@ -75,7 +76,7 @@ public class Utils {
 		return;
 	    }
 
-	    writer = new BufferedWriter(new FileWriter(file));
+	    writer = new BufferedWriter(new FileWriter(file, true));
 
 	    List<String> rows = new LinkedList<String>();
 	    if (results == null || results.isEmpty()) {

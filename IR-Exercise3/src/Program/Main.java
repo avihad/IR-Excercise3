@@ -90,7 +90,7 @@ public class Main {
 		    || this.retriveAlgorithmPath == null) {
 		System.out.println("Error: properties file is missing parameters");
 	    } else {
-		this.luceneInstance = BaseLuceneWrapper.GetInstance(this.retriveAlgorithmPath);
+		this.luceneInstance = BaseLuceneWrapper.getInstance(this.retriveAlgorithmPath);
 		success = true;
 	    }
 	} catch (IOException ex) {

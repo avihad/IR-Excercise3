@@ -64,7 +64,7 @@ public class BaseSearcher {
     }
 
     @SuppressWarnings("unchecked")
-    public List<ScoreDoc> Search(String queryStr) throws IOException {
+    public List<ScoreDoc> search(String queryStr) throws IOException {
 	List<ScoreDoc> docs = Collections.EMPTY_LIST;
 
 	try {

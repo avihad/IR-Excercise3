@@ -2,6 +2,7 @@ package LuceneWrapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,7 +13,7 @@ import org.apache.lucene.store.FSDirectory;
 
 public class BaseLuceneWrapper implements ILuceneWrapper {
 
-    public static ILuceneWrapper GetInstance(String algType) throws IOException {
+    public static ILuceneWrapper getInstance(String algType) throws IOException {
 	ILuceneWrapper wrapper;
 
 	if (algType != null && algType.equalsIgnoreCase("improved")) {
@@ -100,17 +101,22 @@ public class BaseLuceneWrapper implements ILuceneWrapper {
     @Override
     public List<SearchResult> search(String query) {
 	List<SearchResult> result = new LinkedList<SearchResult>();
+	List<String> docsIdsCovered = new ArrayList<String>();
 	BaseSearcher searcher = GetSearcher();
 
 	if (searcher != null) {
 	    try {
-		List<ScoreDoc> docs = searcher.Search(query);
+		List<ScoreDoc> docs = searcher.search(query);
 
 		String id;
 		for (ScoreDoc doc : docs) {
 		    Document tempDoc = searcher.getDoc(doc.doc);
 		    id = tempDoc.get("id");
-		    result.add(new SearchResult(id, doc.score));
+		    // FIXME: need to give a proper threshold
+		    if (!docsIdsCovered.contains(id) && doc.score > 0.1) {
+			result.add(new SearchResult(id, doc.score));
+			docsIdsCovered.add(id);
+		    }
 		}
 
 	    } catch (IOException e) {
