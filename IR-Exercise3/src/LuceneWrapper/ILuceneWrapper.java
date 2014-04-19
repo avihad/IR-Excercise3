@@ -1,6 +1,9 @@
 package LuceneWrapper;
 
+import java.util.List;
+
 public interface ILuceneWrapper {
-	Integer[] Index(MyDoc[] documents);
-	SearchResult[] Search(String query);
+    Boolean index(List<MyDoc> documents);
+
+    List<SearchResult> search(String query);
 }

@@ -1,12 +1,19 @@
 package LuceneWrapper;
 
 public class SearchResult {
-	public String _docId;
-	public float _score;
-	
-	public SearchResult(String docId, float score)
-	{
-		this._docId = docId;
-		this._score = score;
-	}
+    private final String docId;
+    private final float  score;
+
+    public SearchResult(String docId, float score) {
+	this.docId = docId;
+	this.score = score;
+    }
+
+    public String getDocId() {
+	return this.docId;
+    }
+
+    public float getScore() {
+	return this.score;
+    }
 }

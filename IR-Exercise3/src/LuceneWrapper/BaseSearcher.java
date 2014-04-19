@@ -1,6 +1,9 @@
 package LuceneWrapper;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -18,36 +21,35 @@ import org.apache.lucene.util.Version;
 
 public class BaseSearcher {
 
-    private Directory       _luceneDir;
-    protected IndexSearcher _indexSearcher;
-    private IndexReader     _reader;
-    protected Analyzer      _analyzer;
+    private Directory       luceneDir;
+    protected IndexSearcher searcher;
+    private IndexReader     reader;
+    protected Analyzer      analyzer;
 
     public BaseSearcher(Directory luceneDir) {
-	this._luceneDir = luceneDir;
-	this._analyzer = new StandardAnalyzer(Version.LUCENE_47);
+	this.luceneDir = luceneDir;
+	this.analyzer = new StandardAnalyzer(Version.LUCENE_47);
     }
 
-    public void Close() {
+    public void close() {
 	try {
-	    if (this._reader != null) {
-		this._reader.close();
+	    if (this.reader != null) {
+		this.reader.close();
 
 	    }
 	} catch (IOException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	} finally {
-	    this._reader = null;
-	    this._indexSearcher = null;
+	    this.reader = null;
+	    this.searcher = null;
 	}
     }
 
-    public Document GetDoc(int docId) {
+    public Document getDoc(int docId) {
 	Document doc = null;
 
 	try {
-	    doc = this._indexSearcher.doc(docId);
+	    doc = this.searcher.doc(docId);
 	} catch (IOException e) {
 	    System.out.println("Error: unable to fetch doc with id=" + docId);
 	    e.printStackTrace();
@@ -57,23 +59,23 @@ public class BaseSearcher {
     }
 
     public void Init() throws IOException {
-	this._reader = DirectoryReader.open(this._luceneDir);
-	this._indexSearcher = new IndexSearcher(this._reader);
+	this.reader = DirectoryReader.open(this.luceneDir);
+	this.searcher = new IndexSearcher(this.reader);
     }
 
-    public ScoreDoc[] Search(String queryStr) throws IOException {
-	ScoreDoc docs[] = null;
+    @SuppressWarnings("unchecked")
+    public List<ScoreDoc> Search(String queryStr) throws IOException {
+	List<ScoreDoc> docs = Collections.EMPTY_LIST;
 
 	try {
-	    Query query = new QueryParser(Version.LUCENE_47, "content", this._analyzer).parse(queryStr);
-	    TopDocs topDocs = this._indexSearcher.search(query, Integer.MAX_VALUE);
+	    Query query = new QueryParser(Version.LUCENE_47, "content", this.analyzer).parse(queryStr);
+	    TopDocs topDocs = this.searcher.search(query, Integer.MAX_VALUE);
 
 	    if (topDocs.totalHits > 0) {
-		docs = topDocs.scoreDocs;
+		docs = Arrays.asList(topDocs.scoreDocs);
 	    }
 
 	} catch (ParseException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
 
