@@ -1,8 +1,12 @@
 package LuceneWrapper;
 
 import java.io.IOException;
+import java.io.StringReader;
 
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongField;
@@ -50,8 +54,7 @@ public class BaseIndexer {
 	boolean initResult = false;
 	try {
 
-	    IndexWriterConfig luceneConfig = new IndexWriterConfig(Version.LUCENE_47, new StandardAnalyzer(
-		    Version.LUCENE_47));
+	    IndexWriterConfig luceneConfig = new IndexWriterConfig(Version.LUCENE_47, GetAnalzyer());
 	    luceneConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
 	    this.writer = new IndexWriter(this.luceneDir, luceneConfig);
@@ -64,4 +67,36 @@ public class BaseIndexer {
 
 	return initResult;
     }
+    
+    protected Analyzer GetAnalzyer()
+    {
+    	Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_47);
+    	return analyzer;
+    }
+    
+    public void TestAnalyzer()
+	{
+		try
+		{
+	    Analyzer analyzer = GetAnalzyer();
+	    TokenStream stream = analyzer.tokenStream("myfield", new StringReader("hello there three word should not be present"));
+
+	    CharTermAttribute termAtt = stream.addAttribute(CharTermAttribute.class);
+	    
+	    try {
+	        stream.reset();
+	      
+	        while (stream.incrementToken()) {
+	          System.out.println(termAtt.toString());
+	        }
+	      
+	        stream.end();
+	      } finally {
+	        stream.close();
+	      }
+		}catch(Exception ex)
+		{
+			
+		}
+	}
 }

@@ -1,12 +1,15 @@
 package LuceneWrapper;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -69,7 +72,7 @@ public class BaseSearcher {
 
 	try {
 	    Query query = new QueryParser(Version.LUCENE_47, "content", this.analyzer).parse(queryStr);
-	    TopDocs topDocs = this.searcher.search(query, Integer.MAX_VALUE);
+	    TopDocs topDocs = this.searcher.search(query, 10000);
 
 	    if (topDocs.totalHits > 0) {
 		docs = Arrays.asList(topDocs.scoreDocs);
@@ -81,5 +84,31 @@ public class BaseSearcher {
 
 	return docs;
     }
+    
+    public void TestAnalyzer()
+	{
+		try
+		{
+	    Analyzer analyzer = this.analyzer;
+	    TokenStream stream = analyzer.tokenStream("myfield", new StringReader("hello there three word should not be present"));
+
+	    CharTermAttribute termAtt = stream.addAttribute(CharTermAttribute.class);
+	    
+	    try {
+	        stream.reset();
+	      
+	        while (stream.incrementToken()) {
+	          System.out.println(termAtt.toString());
+	        }
+	      
+	        stream.end();
+	      } finally {
+	        stream.close();
+	      }
+		}catch(Exception ex)
+		{
+			
+		}
+	}
 
 }

@@ -1,4 +1,4 @@
 queryFile=queries.txt
 docsFile=docs.txt
 outputFile=output.txt
-retrievalAlgorithm=basic
+retrievalAlgorithm=improved

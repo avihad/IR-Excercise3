@@ -17,19 +17,19 @@ public class BaseLuceneWrapper implements ILuceneWrapper {
 	ILuceneWrapper wrapper;
 
 	if (algType != null && algType.equalsIgnoreCase("improved")) {
-	    wrapper = null;
+	    wrapper = new ImprovedLuceneWrapper("improved_lucene_index");
 	} else {
 	    wrapper = new BaseLuceneWrapper("base_lucene_index");
 	}
 	return wrapper;
     }
 
-    private boolean	_indexChanged = false;
+    protected boolean	_indexChanged = false;
     protected BaseIndexer  _Indexer;
     protected Directory    _LuceneDir;
     protected BaseSearcher _Searcher;
 
-    private BaseLuceneWrapper(String sIndexDir) throws IOException {
+    protected BaseLuceneWrapper(String sIndexDir) throws IOException {
 	this._LuceneDir = FSDirectory.open(new File(sIndexDir));
     }
 
