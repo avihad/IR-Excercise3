@@ -71,7 +71,9 @@ public class BaseSearcher {
 	List<ScoreDoc> docs = Collections.EMPTY_LIST;
 
 	try {
-	    Query query = new QueryParser(Version.LUCENE_47, "content", this.analyzer).parse(queryStr);
+	    QueryParser queryParser = new QueryParser(Version.LUCENE_47, "content", this.analyzer);
+	    String escapeQueryStr = QueryParser.escape(queryStr);
+	    Query query = queryParser.parse(escapeQueryStr);
 	    TopDocs topDocs = this.searcher.search(query, 10000);
 
 	    if (topDocs.totalHits > 0) {
@@ -84,31 +86,28 @@ public class BaseSearcher {
 
 	return docs;
     }
-    
-    public void TestAnalyzer()
-	{
-		try
-		{
-	    Analyzer analyzer = this.analyzer;
-	    TokenStream stream = analyzer.tokenStream("myfield", new StringReader("hello there three word should not be present"));
+
+    public void TestAnalyzer() {
+	try {
+	    TokenStream stream = this.analyzer.tokenStream("myfield", new StringReader(
+		    "hello there three word should not be present"));
 
 	    CharTermAttribute termAtt = stream.addAttribute(CharTermAttribute.class);
-	    
+
 	    try {
-	        stream.reset();
-	      
-	        while (stream.incrementToken()) {
-	          System.out.println(termAtt.toString());
-	        }
-	      
-	        stream.end();
-	      } finally {
-	        stream.close();
-	      }
-		}catch(Exception ex)
-		{
-			
+		stream.reset();
+
+		while (stream.incrementToken()) {
+		    System.out.println(termAtt.toString());
 		}
+
+		stream.end();
+	    } finally {
+		stream.close();
+	    }
+	} catch (Exception ex) {
+
 	}
+    }
 
 }

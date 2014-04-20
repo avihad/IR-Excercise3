@@ -11,60 +11,63 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
-public class BaseLuceneWrapper implements ILuceneWrapper {
+import entities.IRDoc;
+import entities.SearchResult;
 
-    public static ILuceneWrapper getInstance(String algType) throws IOException {
-	ILuceneWrapper wrapper;
+public class BaseSearchEngine implements ISearchEngine {
+
+    public static ISearchEngine createEngine(String algType) throws IOException {
+	ISearchEngine searchEngine;
 
 	if (algType != null && algType.equalsIgnoreCase("improved")) {
-	    wrapper = new ImprovedLuceneWrapper("improved_lucene_index");
+	    searchEngine = new ImprovedSearchEngine("improved_lucene_index");
 	} else {
-	    wrapper = new BaseLuceneWrapper("base_lucene_index");
+	    searchEngine = new BaseSearchEngine("base_lucene_index");
 	}
-	return wrapper;
+	return searchEngine;
     }
 
-    protected boolean	_indexChanged = false;
-    protected BaseIndexer  _Indexer;
-    protected Directory    _LuceneDir;
-    protected BaseSearcher _Searcher;
+    protected boolean      indexChanged = false;
+    protected BaseIndexer  indexer;
+    protected Directory    luceneDir;
+    protected BaseSearcher searcher;
 
-    protected BaseLuceneWrapper(String sIndexDir) throws IOException {
-	this._LuceneDir = FSDirectory.open(new File(sIndexDir));
+    protected BaseSearchEngine(String sIndexDir) throws IOException {
+	this.luceneDir = FSDirectory.open(new File(sIndexDir));
     }
 
     protected synchronized BaseIndexer GetIndexWriter() {
 
-	if (this._Indexer == null) {
-	    BaseIndexer indexer = new BaseIndexer(this._LuceneDir);
+	if (this.indexer == null) {
+	    BaseIndexer indexer = new BaseIndexer(this.luceneDir);
 
 	    if (indexer.OpenIndexWriter()) {
-		this._Indexer = indexer;
+		this.indexer = indexer;
 	    }
 	}
 
-	return this._Indexer;
+	return this.indexer;
     }
 
     protected synchronized BaseSearcher GetSearcher() {
-	if (this._Searcher == null || this._indexChanged) {
+	if (this.searcher == null || this.indexChanged) {
 	    try {
-		if (this._Searcher != null) {
-		    this._Searcher.close();
+		if (this.searcher != null) {
+		    this.searcher.close();
 		}
 
-		this._Searcher = new BaseSearcher(this._LuceneDir);
-		this._Searcher.Init();
+		this.searcher = new BaseSearcher(this.luceneDir);
+		this.searcher.Init();
 	    } catch (IOException e) {
-		this._Searcher = null;
+		this.searcher = null;
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    } finally {
-		this._indexChanged = false;
+		this.indexChanged = false;
 	    }
 	}
 
-	return this._Searcher;
+	return this.searcher;
     }
 
     /**
@@ -72,13 +75,13 @@ public class BaseLuceneWrapper implements ILuceneWrapper {
      */
 
     @Override
-    public Boolean index(List<MyDoc> documents) {
+    public Boolean index(List<IRDoc> documents) {
 	BaseIndexer indexer = GetIndexWriter();
 	Integer indexedDocsCount = 0;
 
 	if (indexer != null) {
 	    Document doc;
-	    for (MyDoc myDoc : documents) {
+	    for (IRDoc myDoc : documents) {
 		doc = indexer.getDocument(myDoc.getId(), myDoc.getContent());
 
 		if (doc != null) {
@@ -90,7 +93,7 @@ public class BaseLuceneWrapper implements ILuceneWrapper {
 		    }
 		}
 	    }
-	    this._indexChanged = true;
+	    this.indexChanged = true;
 
 	    indexer.closeIndexWriter();
 	}

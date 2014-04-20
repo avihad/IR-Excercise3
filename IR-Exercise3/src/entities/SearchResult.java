@@ -1,4 +1,4 @@
-package LuceneWrapper;
+package entities;
 
 public class SearchResult {
     private final String docId;

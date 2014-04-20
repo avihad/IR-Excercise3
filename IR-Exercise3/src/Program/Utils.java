@@ -6,16 +6,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
-import LuceneWrapper.MyDoc;
-import LuceneWrapper.SearchResult;
+import entities.SearchResult;
+import entities.SimpleIRDoc;
 
 public class Utils {
 
-    public static MyDoc GetMyDocFromStr(String str) {
-	MyDoc doc = null;
+    public static SimpleIRDoc getMyDocFromStr(String str) {
+	SimpleIRDoc doc = null;
 	if (str != null && !str.isEmpty()) {
 	    String trimmedStr = str.trim();
 	    int firstWS = trimmedStr.indexOf(' ');
@@ -28,7 +30,7 @@ public class Utils {
 
 		    String content = trimmedStr.substring(firstWS + 1);
 
-		    doc = new MyDoc(nDocId, content);
+		    doc = new SimpleIRDoc(nDocId, content);
 
 		} catch (NumberFormatException nfe) {
 		    nfe.printStackTrace();
@@ -60,7 +62,7 @@ public class Utils {
 
     }
 
-    public static void PrintSearchResults(File file, String queryID, List<SearchResult> results) {
+    public static void printSearchResults(File file, String queryID, List<SearchResult> results) {
 
 	BufferedWriter writer = null;
 	try {
@@ -104,7 +106,7 @@ public class Utils {
 
     }
 
-    public static List<String> ReadLinesFromFile(String filePath) {
+    public static List<String> readLinesFromFile(String filePath) {
 	List<String> lines = new LinkedList<String>();
 
 	File file = new File(filePath);
@@ -129,5 +131,39 @@ public class Utils {
 	}
 
 	return lines;
+    }
+
+    /**
+     * Reads a file structured as number and content and parsed it to a map
+     * 
+     * @param filePath
+     *            path to the file need to be parsed
+     * */
+    public static Map<Integer, String> simpleIRParser(String filePath) {
+	Map<Integer, String> results = new HashMap<Integer, String>();
+	List<String> lines = Utils.readLinesFromFile(filePath);
+
+	for (String line : lines) {
+	    String trimmedStr = line.trim();
+	    int firstWhiteSpace = trimmedStr.indexOf(' ');
+
+	    // check that line contains an id and a non-empty content
+	    if (firstWhiteSpace > -1 && trimmedStr.length() > (firstWhiteSpace + 1)) {
+		try {
+		    String idString = trimmedStr.substring(0, firstWhiteSpace);
+		    int id = Integer.parseInt(idString);
+
+		    String content = trimmedStr.substring(firstWhiteSpace + 1);
+
+		    results.put(id, content);
+
+		} catch (NumberFormatException nfe) {
+		    nfe.printStackTrace();
+		}
+
+	    }
+
+	}
+	return results;
     }
 }

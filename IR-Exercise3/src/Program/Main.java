@@ -6,12 +6,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
-import LuceneWrapper.BaseLuceneWrapper;
-import LuceneWrapper.ILuceneWrapper;
-import LuceneWrapper.MyDoc;
-import LuceneWrapper.SearchResult;
+import LuceneWrapper.BaseSearchEngine;
+import LuceneWrapper.ISearchEngine;
+import entities.IRDoc;
+import entities.SearchResult;
+import entities.SimpleIRDoc;
 
 public class Main {
 
@@ -31,25 +33,19 @@ public class Main {
     private String	 outputFilePath;
     private String	 retriveAlgorithmPath;
     private String	 propFilePath;
-    private ILuceneWrapper luceneInstance = null;
+    private ISearchEngine luceneInstance;
 
     public Main(String propFilePath) {
 	this.propFilePath = propFilePath;
     }
 
-    private List<MyDoc> documentsParser(String path) {
-	List<MyDoc> parsedDocs = new LinkedList<MyDoc>();
+    private List<IRDoc> documentsParser(String path) {
+	List<IRDoc> parsedDocs = new LinkedList<IRDoc>();
 
-	List<String> lines = Utils.ReadLinesFromFile(path);
+	Map<Integer, String> parsedLines = Utils.simpleIRParser(path);
 
-	MyDoc tempDoc;
-
-	for (String line : lines) {
-	    tempDoc = Utils.GetMyDocFromStr(line);
-
-	    if (tempDoc != null) {
-		parsedDocs.add(tempDoc);
-	    }
+	for (Map.Entry<Integer, String> line : parsedLines.entrySet()) {
+	    parsedDocs.add(new SimpleIRDoc(line.getKey(), line.getValue()));
 	}
 
 	return parsedDocs;
@@ -57,7 +53,7 @@ public class Main {
 
     private void IndexDocuments() {
 
-	List<MyDoc> documents = documentsParser(this.docsFilePath);
+	List<IRDoc> documents = documentsParser(this.docsFilePath);
 
 	if (documents.isEmpty()) {
 	    System.out.println("Error: no documents were read from documents file");
@@ -90,7 +86,7 @@ public class Main {
 		    || this.retriveAlgorithmPath == null) {
 		System.out.println("Error: properties file is missing parameters");
 	    } else {
-		this.luceneInstance = BaseLuceneWrapper.getInstance(this.retriveAlgorithmPath);
+		this.luceneInstance = BaseSearchEngine.createEngine(this.retriveAlgorithmPath);
 		success = true;
 	    }
 	} catch (IOException ex) {
@@ -109,15 +105,15 @@ public class Main {
     }
 
     private void Search() {
-	List<MyDoc> documents = documentsParser(this.queryFilePath);
+	List<IRDoc> documents = documentsParser(this.queryFilePath);
 
 	if (!documents.isEmpty()) {
 	    File outputFile = new File(this.outputFilePath);
 
 	    List<SearchResult> queryResults;
-	    for (MyDoc doc : documents) {
+	    for (IRDoc doc : documents) {
 		queryResults = this.luceneInstance.search(doc.getContent());
-		Utils.PrintSearchResults(outputFile, Integer.toString(doc.getId()), queryResults);
+		Utils.printSearchResults(outputFile, Integer.toString(doc.getId()), queryResults);
 	    }
 	} else {
 	    System.out.println("Error: no documents were read from query file");
