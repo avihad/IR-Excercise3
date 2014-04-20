@@ -29,14 +29,15 @@ public class BasicSearchEngine implements ISearchEngine {
 	return searchEngine;
     }
 
-    protected boolean      indexChanged = false;
+    protected boolean       indexChanged;
     protected BasicIndexer  indexer;
-    protected Directory    luceneDir;
+    protected Directory     luceneDir;
     protected BasicSearcher searcher;
-    protected List<IRDoc>  idexedDocs;
+    protected List<IRDoc>   idexedDocs;
 
     protected BasicSearchEngine(String sIndexDir) throws IOException {
 	this.luceneDir = FSDirectory.open(new File(sIndexDir));
+	this.indexChanged = false;
     }
 
     protected synchronized BasicIndexer getIndexWriter() {

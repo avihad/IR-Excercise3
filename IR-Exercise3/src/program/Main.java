@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import searchengine.BasicSearchEngine;
 import searchengine.ISearchEngine;
+import utils.Utilities;
 import entities.IRDoc;
 import entities.SearchResult;
 import entities.SimpleIRDoc;
@@ -39,10 +40,10 @@ public class Main {
 	this.propFilePath = propFilePath;
     }
 
-    private List<IRDoc> documentsParser(String path) {
+    private List<IRDoc> createDocuments(String path) {
 	List<IRDoc> parsedDocs = new LinkedList<IRDoc>();
 
-	Map<Integer, String> parsedLines = Utils.simpleIRParser(path);
+	Map<Integer, String> parsedLines = Utilities.simpleIRParser(path);
 
 	for (Map.Entry<Integer, String> line : parsedLines.entrySet()) {
 	    parsedDocs.add(new SimpleIRDoc(line.getKey(), line.getValue()));
@@ -53,7 +54,7 @@ public class Main {
 
     private void IndexDocuments() {
 
-	List<IRDoc> documents = documentsParser(this.docsFilePath);
+	List<IRDoc> documents = createDocuments(this.docsFilePath);
 
 	if (documents.isEmpty()) {
 	    System.out.println("Error: no documents were read from documents file");
@@ -105,7 +106,7 @@ public class Main {
     }
 
     private void Search() {
-	List<IRDoc> documents = documentsParser(this.queryFilePath);
+	List<IRDoc> documents = createDocuments(this.queryFilePath);
 
 	if (!documents.isEmpty()) {
 	    File outputFile = new File(this.outputFilePath);
@@ -113,7 +114,7 @@ public class Main {
 	    List<SearchResult> queryResults;
 	    for (IRDoc doc : documents) {
 		queryResults = this.luceneInstance.search(doc.getContent());
-		Utils.printSearchResults(outputFile, Integer.toString(doc.getId()), queryResults);
+		Utilities.printSearchResults(outputFile, Integer.toString(doc.getId()), queryResults);
 	    }
 	} else {
 	    System.out.println("Error: no documents were read from query file");

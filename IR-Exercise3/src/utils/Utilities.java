@@ -1,4 +1,4 @@
-package program;
+package utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,7 +14,7 @@ import java.util.Map;
 import entities.SearchResult;
 import entities.SimpleIRDoc;
 
-public class Utils {
+public class Utilities {
 
     public static SimpleIRDoc getMyDocFromStr(String str) {
 	SimpleIRDoc doc = null;
@@ -141,7 +141,7 @@ public class Utils {
      * */
     public static Map<Integer, String> simpleIRParser(String filePath) {
 	Map<Integer, String> results = new HashMap<Integer, String>();
-	List<String> lines = Utils.readLinesFromFile(filePath);
+	List<String> lines = Utilities.readLinesFromFile(filePath);
 
 	for (String line : lines) {
 	    String trimmedStr = line.trim();
