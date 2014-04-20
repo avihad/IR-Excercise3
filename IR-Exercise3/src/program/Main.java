@@ -1,4 +1,4 @@
-package Program;
+package program;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import LuceneWrapper.BaseSearchEngine;
-import LuceneWrapper.ISearchEngine;
+import searchengine.BasicSearchEngine;
+import searchengine.ISearchEngine;
 import entities.IRDoc;
 import entities.SearchResult;
 import entities.SimpleIRDoc;
@@ -86,7 +86,7 @@ public class Main {
 		    || this.retriveAlgorithmPath == null) {
 		System.out.println("Error: properties file is missing parameters");
 	    } else {
-		this.luceneInstance = BaseSearchEngine.createEngine(this.retriveAlgorithmPath);
+		this.luceneInstance = BasicSearchEngine.createEngine(this.retriveAlgorithmPath);
 		success = true;
 	    }
 	} catch (IOException ex) {

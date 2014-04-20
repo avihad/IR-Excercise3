@@ -1,4 +1,4 @@
-package LuceneWrapper;
+package searchengine;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,10 +11,12 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import searchengine.index.BasicIndexer;
+import searchengine.search.BasicSearcher;
 import entities.IRDoc;
 import entities.SearchResult;
 
-public class BaseSearchEngine implements ISearchEngine {
+public class BasicSearchEngine implements ISearchEngine {
 
     public static ISearchEngine createEngine(String algType) throws IOException {
 	ISearchEngine searchEngine;
@@ -22,24 +24,25 @@ public class BaseSearchEngine implements ISearchEngine {
 	if (algType != null && algType.equalsIgnoreCase("improved")) {
 	    searchEngine = new ImprovedSearchEngine("improved_lucene_index");
 	} else {
-	    searchEngine = new BaseSearchEngine("base_lucene_index");
+	    searchEngine = new BasicSearchEngine("base_lucene_index");
 	}
 	return searchEngine;
     }
 
     protected boolean      indexChanged = false;
-    protected BaseIndexer  indexer;
+    protected BasicIndexer  indexer;
     protected Directory    luceneDir;
-    protected BaseSearcher searcher;
+    protected BasicSearcher searcher;
+    protected List<IRDoc>  idexedDocs;
 
-    protected BaseSearchEngine(String sIndexDir) throws IOException {
+    protected BasicSearchEngine(String sIndexDir) throws IOException {
 	this.luceneDir = FSDirectory.open(new File(sIndexDir));
     }
 
-    protected synchronized BaseIndexer GetIndexWriter() {
+    protected synchronized BasicIndexer getIndexWriter() {
 
 	if (this.indexer == null) {
-	    BaseIndexer indexer = new BaseIndexer(this.luceneDir);
+	    BasicIndexer indexer = new BasicIndexer(this.luceneDir);
 
 	    if (indexer.OpenIndexWriter()) {
 		this.indexer = indexer;
@@ -49,14 +52,14 @@ public class BaseSearchEngine implements ISearchEngine {
 	return this.indexer;
     }
 
-    protected synchronized BaseSearcher GetSearcher() {
+    protected synchronized BasicSearcher getSearcher() {
 	if (this.searcher == null || this.indexChanged) {
 	    try {
 		if (this.searcher != null) {
 		    this.searcher.close();
 		}
 
-		this.searcher = new BaseSearcher(this.luceneDir);
+		this.searcher = new BasicSearcher(this.luceneDir);
 		this.searcher.Init();
 	    } catch (IOException e) {
 		this.searcher = null;
@@ -76,13 +79,13 @@ public class BaseSearchEngine implements ISearchEngine {
 
     @Override
     public Boolean index(List<IRDoc> documents) {
-	BaseIndexer indexer = GetIndexWriter();
+	BasicIndexer indexer = getIndexWriter();
 	Integer indexedDocsCount = 0;
 
 	if (indexer != null) {
 	    Document doc;
 	    for (IRDoc myDoc : documents) {
-		doc = indexer.getDocument(myDoc.getId(), myDoc.getContent());
+		doc = indexer.createDocument(myDoc.getId(), myDoc.getContent());
 
 		if (doc != null) {
 		    try {
@@ -105,7 +108,7 @@ public class BaseSearchEngine implements ISearchEngine {
     public List<SearchResult> search(String query) {
 	List<SearchResult> result = new LinkedList<SearchResult>();
 	List<String> docsIdsCovered = new ArrayList<String>();
-	BaseSearcher searcher = GetSearcher();
+	BasicSearcher searcher = getSearcher();
 
 	if (searcher != null) {
 	    try {

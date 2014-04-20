@@ -1,4 +1,4 @@
-package LuceneWrapper;
+package searchengine.search;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -17,7 +17,7 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
-public class ImprovedSearcher extends BaseSearcher {
+public class ImprovedSearcher extends BasicSearcher {
 
     protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but",
 						   "by", "for", "if", "in", "into", "is", "it", "no", "not",

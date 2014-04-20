@@ -1,4 +1,4 @@
-package LuceneWrapper;
+package searchengine.search;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -22,14 +22,14 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
-public class BaseSearcher {
+public class BasicSearcher {
 
     private Directory       luceneDir;
     protected IndexSearcher searcher;
     private IndexReader     reader;
     protected Analyzer      analyzer;
 
-    public BaseSearcher(Directory luceneDir) {
+    public BasicSearcher(Directory luceneDir) {
 	this.luceneDir = luceneDir;
 	this.analyzer = new StandardAnalyzer(Version.LUCENE_47);
     }

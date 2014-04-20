@@ -1,17 +1,22 @@
-package LuceneWrapper;
+package searchengine;
 
 import java.io.IOException;
 
-public class ImprovedSearchEngine extends BaseSearchEngine {
+import searchengine.index.BasicIndexer;
+import searchengine.index.ImprovedIndexer;
+import searchengine.search.BasicSearcher;
+import searchengine.search.ImprovedSearcher;
+
+public class ImprovedSearchEngine extends BasicSearchEngine {
 
 	public ImprovedSearchEngine(String indexDir) throws IOException {
 		super(indexDir);
 	}
 
-	protected synchronized BaseIndexer GetIndexWriter() {
+	protected synchronized BasicIndexer getIndexWriter() {
 
 		if (this.indexer == null) {
-			BaseIndexer indexer = new ImprovedIndexer(this.luceneDir);
+			BasicIndexer indexer = new ImprovedIndexer(this.luceneDir);
 
 			if (indexer.OpenIndexWriter()) {
 				this.indexer = indexer;
@@ -21,7 +26,7 @@ public class ImprovedSearchEngine extends BaseSearchEngine {
 		return this.indexer;
 	}
 
-	protected synchronized BaseSearcher GetSearcher() {
+	protected synchronized BasicSearcher getSearcher() {
 		if (this.searcher == null || this.indexChanged) {
 			try {
 				if (this.searcher != null) {

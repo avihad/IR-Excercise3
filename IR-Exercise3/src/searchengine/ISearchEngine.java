@@ -1,4 +1,4 @@
-package LuceneWrapper;
+package searchengine;
 
 import java.util.List;
 

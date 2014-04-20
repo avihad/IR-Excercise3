@@ -1,4 +1,4 @@
-package LuceneWrapper;
+package searchengine.index;
 
 import java.io.Reader;
 import java.util.Arrays;
@@ -17,7 +17,7 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
-public class ImprovedIndexer extends BaseIndexer {
+public class ImprovedIndexer extends BasicIndexer {
 
     protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but",
 						   "by", "for", "if", "in", "into", "is", "it", "no", "not",
@@ -31,7 +31,7 @@ public class ImprovedIndexer extends BaseIndexer {
     }
 
     @Override
-    protected Analyzer GetAnalzyer() {
+    protected Analyzer createAnalzyer() {
 	Analyzer analyzer = new Analyzer() {
 	    @Override
 	    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
@@ -50,8 +50,8 @@ public class ImprovedIndexer extends BaseIndexer {
     }
 
     @Override
-    public Document getDocument(int docId, String content) {
+    public Document createDocument(int docId, String content) {
 	// FIXME: may need to create a document that has more than just 2 fields (i.e. id, content)
-	return super.getDocument(docId, content);
+	return super.createDocument(docId, content);
     }
 }

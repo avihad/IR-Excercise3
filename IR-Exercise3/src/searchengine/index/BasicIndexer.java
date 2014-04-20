@@ -1,4 +1,4 @@
-package LuceneWrapper;
+package searchengine.index;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -16,11 +16,11 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
-public class BaseIndexer {
+public class BasicIndexer {
     protected IndexWriter writer;
     private Directory     luceneDir;
 
-    public BaseIndexer(Directory luceneDir) {
+    public BasicIndexer(Directory luceneDir) {
 	this.luceneDir = luceneDir;
     }
 
@@ -36,7 +36,7 @@ public class BaseIndexer {
 	}
     }
 
-    public Document getDocument(int docId, String content) {
+    public Document createDocument(int docId, String content) {
 	Document newDoc = new Document();
 	newDoc.add(new TextField("content", content, Field.Store.YES));
 	newDoc.add(new LongField("id", docId, Field.Store.YES));
@@ -54,7 +54,7 @@ public class BaseIndexer {
 	boolean initResult = false;
 	try {
 
-	    IndexWriterConfig luceneConfig = new IndexWriterConfig(Version.LUCENE_47, GetAnalzyer());
+	    IndexWriterConfig luceneConfig = new IndexWriterConfig(Version.LUCENE_47, createAnalzyer());
 	    luceneConfig.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
 
 	    this.writer = new IndexWriter(this.luceneDir, luceneConfig);
@@ -68,7 +68,7 @@ public class BaseIndexer {
 	return initResult;
     }
     
-    protected Analyzer GetAnalzyer()
+    protected Analyzer createAnalzyer()
     {
     	Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_47);
     	return analyzer;
@@ -78,7 +78,7 @@ public class BaseIndexer {
 	{
 		try
 		{
-	    Analyzer analyzer = GetAnalzyer();
+	    Analyzer analyzer = createAnalzyer();
 	    TokenStream stream = analyzer.tokenStream("myfield", new StringReader("hello there three word should not be present"));
 
 	    CharTermAttribute termAtt = stream.addAttribute(CharTermAttribute.class);
