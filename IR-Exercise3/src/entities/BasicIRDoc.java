@@ -1,10 +1,10 @@
 package entities;
 
-public class SimpleIRDoc implements IRDoc {
+public class BasicIRDoc implements IRDoc {
     private final int    id;
     private final String content;
 
-    public SimpleIRDoc(int docId, String content) {
+    public BasicIRDoc(int docId, String content) {
 	this.id = docId;
 	this.content = content;
     }

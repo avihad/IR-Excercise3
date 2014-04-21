@@ -9,4 +9,8 @@ public enum EngineStrategy {
 	this.value = value;
     }
 
+    public String getValue() {
+	return this.value;
+    }
+
 }

@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.Map;
 
 import entities.SearchResult;
-import entities.SimpleIRDoc;
+import entities.BasicIRDoc;
 
 public class Utilities {
 
-    public static SimpleIRDoc getMyDocFromStr(String str) {
-	SimpleIRDoc doc = null;
+    public static BasicIRDoc getMyDocFromStr(String str) {
+	BasicIRDoc doc = null;
 	if (str != null && !str.isEmpty()) {
 	    String trimmedStr = str.trim();
 	    int firstWS = trimmedStr.indexOf(' ');
@@ -30,7 +30,7 @@ public class Utilities {
 
 		    String content = trimmedStr.substring(firstWS + 1);
 
-		    doc = new SimpleIRDoc(nDocId, content);
+		    doc = new BasicIRDoc(nDocId, content);
 
 		} catch (NumberFormatException nfe) {
 		    nfe.printStackTrace();

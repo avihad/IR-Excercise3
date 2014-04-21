@@ -14,7 +14,7 @@ import searchengine.ISearchEngine;
 import utils.Utilities;
 import entities.IRDoc;
 import entities.SearchResult;
-import entities.SimpleIRDoc;
+import entities.BasicIRDoc;
 
 public class Main {
 
@@ -46,7 +46,7 @@ public class Main {
 	Map<Integer, String> parsedLines = Utilities.simpleIRParser(path);
 
 	for (Map.Entry<Integer, String> line : parsedLines.entrySet()) {
-	    parsedDocs.add(new SimpleIRDoc(line.getKey(), line.getValue()));
+	    parsedDocs.add(new BasicIRDoc(line.getKey(), line.getValue()));
 	}
 
 	return parsedDocs;
