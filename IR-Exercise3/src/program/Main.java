@@ -11,10 +11,11 @@ import java.util.Properties;
 
 import searchengine.BasicSearchEngine;
 import searchengine.ISearchEngine;
+import utils.DocFactory;
 import utils.Utilities;
+import entities.EngineStrategy;
 import entities.IRDoc;
 import entities.SearchResult;
-import entities.BasicIRDoc;
 
 public class Main {
 
@@ -29,11 +30,11 @@ public class Main {
 
     }
 
-    private String	 queryFilePath;
-    private String	 docsFilePath;
-    private String	 outputFilePath;
-    private String	 retriveAlgorithmPath;
-    private String	 propFilePath;
+    private String	queryFilePath;
+    private String	docsFilePath;
+    private String	outputFilePath;
+    private String	retriveAlgorithmPath;
+    private String	propFilePath;
     private ISearchEngine luceneInstance;
 
     public Main(String propFilePath) {
@@ -46,7 +47,7 @@ public class Main {
 	Map<Integer, String> parsedLines = Utilities.simpleIRParser(path);
 
 	for (Map.Entry<Integer, String> line : parsedLines.entrySet()) {
-	    parsedDocs.add(new BasicIRDoc(line.getKey(), line.getValue()));
+	    parsedDocs.add(DocFactory.instance.create(line.getKey(), line.getValue()));
 	}
 
 	return parsedDocs;
@@ -87,6 +88,9 @@ public class Main {
 		    || this.retriveAlgorithmPath == null) {
 		System.out.println("Error: properties file is missing parameters");
 	    } else {
+		EngineStrategy strategy = EngineStrategy.valueOf(this.retriveAlgorithmPath);
+		DocFactory.instance.setStrategy(strategy);
+
 		this.luceneInstance = BasicSearchEngine.createEngine(this.retriveAlgorithmPath);
 		success = true;
 	    }

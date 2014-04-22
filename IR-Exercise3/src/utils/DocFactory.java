@@ -1,8 +1,8 @@
 package utils;
 
+import entities.BasicIRDoc;
 import entities.EngineStrategy;
 import entities.IRDoc;
-import entities.BasicIRDoc;
 import entities.ImprovedIRDoc;
 
 public enum DocFactory {
@@ -17,7 +17,7 @@ public enum DocFactory {
 		return ImprovedIRDoc.create(id, content);
 	    case Basic:
 	    default:
-		return new BasicIRDoc(id, content);
+		return BasicIRDoc.create(id, content);
 	}
     }
 

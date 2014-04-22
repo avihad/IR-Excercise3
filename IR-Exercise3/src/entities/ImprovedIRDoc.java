@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.lucene.document.Document;
+
 import utils.Pair;
+import utils.Utilities;
 
 public class ImprovedIRDoc extends BasicIRDoc {
 
@@ -13,45 +16,23 @@ public class ImprovedIRDoc extends BasicIRDoc {
 	List<Integer> docReferences = contentReferencesPair.second;
 	String docContent = contentReferencesPair.first;
 	String title = extractTitle(content);
-	List<String> dates = extractDates(content);
-	List<String> keywords = extractDates(content);
+	List<String> dates = Utilities.extractDates(content);
+	List<String> keywords = Utilities.extractKeywords(content);
 
 	return new ImprovedIRDoc(id, docContent, title, docReferences, dates, keywords);
     }
 
     /**
-     * extract all the dates from the content in the format "JB <DATE> AM\PM"
+     * return a substring of content from the beginning until the first comma
      * */
-    private static List<String> extractDates(String content) {
-
-	List<String> dates = new ArrayList<String>();
-	// FIXME: change to the correct length
-	final int dateMaxLength = 30;
-	int startIndex = 0;
-	int endIndex = 0;
-
-	while (startIndex > -1 && endIndex > -1) {
-	    startIndex = content.indexOf("JB", startIndex);
-	    endIndex = content.indexOf("PM");
-	    if (endIndex > -1 && (endIndex - startIndex) <= dateMaxLength) {
-		// TODO: change indexes
-		dates.add(content.substring(startIndex, endIndex));
-	    } else {
-		endIndex = content.indexOf("AM");
-		if (endIndex > -1 && (endIndex - startIndex) <= dateMaxLength) {
-		    // TODO: change indexes
-		    dates.add(content.substring(startIndex, endIndex));
-		}
-
-	    }
-	    startIndex = endIndex;
-	}
-	return dates;
-    }
-
     private static String extractTitle(String content) {
-	// TODO Auto-generated method stub
-	return null;
+
+	int firstComma = content.indexOf(",");
+	if (firstComma > 0) {
+	    return content.substring(0, firstComma);
+	} else {
+	    return "";
+	}
     }
 
     private static List<Integer> parseReferences(String referencesString) {
@@ -85,7 +66,7 @@ public class ImprovedIRDoc extends BasicIRDoc {
     private final List<String>  keywords;
     private final String	title;
 
-    public ImprovedIRDoc(int docId, String content, String title, List<Integer> references,
+    private ImprovedIRDoc(int docId, String content, String title, List<Integer> references,
 	    List<String> dates, List<String> keywords) {
 	super(docId, content);
 	this.references = Collections.unmodifiableList(references);
@@ -95,8 +76,26 @@ public class ImprovedIRDoc extends BasicIRDoc {
 
     }
 
+    @Override
+    public Document createDocument() {
+	// FIXME:: create a new document from the improved docs
+	return super.createDocument();
+    }
+
+    public List<String> getDates() {
+	return this.dates;
+    }
+
+    public List<String> getKeywords() {
+	return this.keywords;
+    }
+
     public List<Integer> getReferences() {
 	return this.references;
+    }
+
+    public String getTitle() {
+	return this.title;
     }
 
 }

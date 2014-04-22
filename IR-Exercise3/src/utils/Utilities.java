@@ -6,18 +6,69 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import entities.IRDoc;
 import entities.SearchResult;
-import entities.BasicIRDoc;
 
 public class Utilities {
 
-    public static BasicIRDoc getMyDocFromStr(String str) {
-	BasicIRDoc doc = null;
+    public static final List<String> MONTHS       = Arrays.asList("January", "February", "March", "April",
+							  "May", "July", "June", "August", "September",
+							  "October", "November", "December");
+
+    public static final List<String> NOT_KEYWORDS = Arrays.asList("JB", "CACM");
+
+    /**
+     * extract all the dates from the content in the format "JB <DATE> AM\PM"
+     * */
+    public static List<String> extractDates(String content) {
+
+	List<String> dates = new ArrayList<String>();
+	// FIXME: change to the correct length
+	final int dateMaxLength = 30;
+	int startIndex = 0;
+	int endIndex = 0;
+
+	while (startIndex > -1 && endIndex > -1) {
+	    startIndex = content.indexOf("JB", startIndex);
+	    endIndex = content.indexOf("PM");
+	    if (endIndex > -1 && (endIndex - startIndex) <= dateMaxLength) {
+		dates.add(content.substring(startIndex + 2, endIndex - 1));
+	    } else {
+		endIndex = content.indexOf("AM");
+		if (endIndex > -1 && (endIndex - startIndex) <= dateMaxLength) {
+		    dates.add(content.substring(startIndex + 2, endIndex - 1));
+		}
+
+	    }
+	    startIndex = endIndex;
+	}
+	return dates;
+    }
+
+    public static List<String> extractKeywords(String content) {
+	List<String> keywords = new ArrayList<String>();
+	String[] tokens = content.split(" ");
+
+	String tmp;
+	for (String token : tokens) {
+	    tmp = token.toUpperCase();
+	    if (token.equals(tmp)) {
+		keywords.add(token);
+	    }
+	}
+	keywords.removeAll(Utilities.NOT_KEYWORDS);
+	return keywords;
+    }
+
+    public static IRDoc getMyDocFromStr(String str) {
+	IRDoc doc = null;
 	if (str != null && !str.isEmpty()) {
 	    String trimmedStr = str.trim();
 	    int firstWS = trimmedStr.indexOf(' ');
@@ -30,7 +81,7 @@ public class Utilities {
 
 		    String content = trimmedStr.substring(firstWS + 1);
 
-		    doc = new BasicIRDoc(nDocId, content);
+		    doc = DocFactory.instance.create(nDocId, content);
 
 		} catch (NumberFormatException nfe) {
 		    nfe.printStackTrace();
