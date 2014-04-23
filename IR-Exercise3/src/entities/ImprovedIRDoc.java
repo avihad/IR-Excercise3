@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.Field;
 
 import utils.Pair;
 import utils.Utilities;
@@ -39,10 +41,13 @@ public class ImprovedIRDoc extends BasicIRDoc {
 	List<Integer> references = new ArrayList<Integer>();
 	String[] refStrings = referencesString.split(",");
 
-	for (String reference : refStrings) {
-	    int ref = Integer.parseInt(reference);
-	    references.add(ref);
-	}
+		for (String reference : refStrings) {
+			try {
+				int ref = Integer.parseInt(reference.trim());
+				references.add(ref);
+			} catch (Exception ex) {
+			}
+		}
 
 	return references;
     }
@@ -78,8 +83,12 @@ public class ImprovedIRDoc extends BasicIRDoc {
 
     @Override
     public Document createDocument() {
-	// FIXME:: create a new document from the improved docs
-	return super.createDocument();
+    	Document newDoc = super.createDocument();
+    	newDoc.add(new TextField("references", Utilities.GenericJoinToStr(this.references, " "), Field.Store.YES));
+    	newDoc.add(new TextField("keywords", Utilities.GenericJoinToStr(this.keywords, " "), Field.Store.YES));
+    	newDoc.add(new TextField("dates", Utilities.GenericJoinToStr(this.dates, " "), Field.Store.YES));
+
+    	return newDoc;
     }
 
     public List<String> getDates() {

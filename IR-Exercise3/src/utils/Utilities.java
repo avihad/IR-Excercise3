@@ -8,7 +8,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,8 @@ public class Utilities {
 							  "October", "November", "December");
 
     public static final List<String> NOT_KEYWORDS = Arrays.asList("JB", "CACM");
+    
+    public static final List<String> REFERENCES = Arrays.asList("references", "reference", "ref", "ref.");
 
     /**
      * extract all the dates from the content in the format "JB <DATE> AM\PM"
@@ -65,6 +69,40 @@ public class Utilities {
 	}
 	keywords.removeAll(Utilities.NOT_KEYWORDS);
 	return keywords;
+    }
+    
+    public static List<String> extractReferences(String content)
+    {
+    	List<String> references = new ArrayList<String>();
+    	String[] tokens = content.split(" ");
+    	
+    	boolean refFound = false;
+    	
+    	for(String ref : references)
+    	{
+    		if(refFound)
+    			break;
+    		
+    		for(int i = 0; i<tokens.length; i++)
+    		{
+    			if(refFound)
+    			{
+    				if(isNumeric(tokens[i]))
+    				{
+    					references.add(tokens[i]);
+    				}
+    				else
+    				{
+    					break;
+    				}
+    			}
+    			else if(tokens[i].equalsIgnoreCase(ref))
+    			{
+    				refFound = true;
+    			}
+    		}
+    	}
+    	return references;
     }
 
     public static IRDoc getMyDocFromStr(String str) {
@@ -216,5 +254,38 @@ public class Utilities {
 
 	}
 	return results;
+    }
+    
+    public static String GenericJoinToStr(Collection<?> c, String join)
+    {
+    	StringBuilder sb = new StringBuilder();
+    	
+    	if(c != null && !c.isEmpty())
+    	{
+    		Iterator<?> iter = c.iterator();
+    		
+    		sb.append(iter.next());
+    		
+    		while(iter.hasNext())
+    		{
+    			sb.append(join);
+    			sb.append(iter.next());
+    		}
+    	}
+    	
+    	return sb.toString();
+    }
+    
+    public static boolean isNumeric(String str)
+    {
+    	boolean result = false;
+    	try
+    	{
+    		Integer.parseInt(str);
+    		result = true;
+    	}
+    	catch(Exception ex){}
+    	
+    	return result;
     }
 }

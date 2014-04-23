@@ -88,8 +88,9 @@ public class Main {
 		    || this.retriveAlgorithmPath == null) {
 		System.out.println("Error: properties file is missing parameters");
 	    } else {
-		EngineStrategy strategy = EngineStrategy.valueOf(this.retriveAlgorithmPath);
-		DocFactory.instance.setStrategy(strategy);
+		//EngineStrategy strategy = EngineStrategy.valueOf(this.retriveAlgorithmPath);
+		//DocFactory.instance.setStrategy(strategy);
+		DocFactory.instance.setStrategy(EngineStrategy.Improved);
 
 		this.luceneInstance = BasicSearchEngine.createEngine(this.retriveAlgorithmPath);
 		success = true;
