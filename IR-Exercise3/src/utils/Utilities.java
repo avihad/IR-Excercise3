@@ -152,10 +152,44 @@ public class Utilities {
 	    sb.append(docID);
 	}
 	sb.append(",");
-	sb.append(String.format("%.1f", score));
+	sb.append(String.format("%.3f", score));
 	sb.append("\n");
 
 	return sb.toString();
+
+    }
+
+    /**
+     * Parsing the truth file for the computation of the precision of our algorithms
+     * 
+     * @param filePath
+     *            - the path to the truth fie
+     * */
+    public static Map<Integer, List<Integer>> getTruthLists(String filePath) {
+	Map<Integer, List<Integer>> truthMap = new HashMap<Integer, List<Integer>>();
+
+	Map<Integer, String> idAndContent = simpleIRParser(filePath);
+	List<String> linesFromFile = readLinesFromFile(filePath);
+
+	List<Integer> tmp;
+
+	for (String line : linesFromFile) {
+	    Pair<Integer, String> idContent = parseSingleLine(line);
+	    Integer queryId = idContent.first;
+	    String content = idContent.second;
+	    int docId = Integer.parseInt(content.substring(2, content.length() - 2));
+
+	    if (truthMap.containsKey(queryId)) {
+		tmp = truthMap.get(queryId);
+	    } else {
+		tmp = new ArrayList<Integer>();
+		truthMap.put(queryId, tmp);
+	    }
+	    tmp.add(docId);
+
+	}
+
+	return truthMap;
 
     }
 
@@ -168,6 +202,31 @@ public class Utilities {
 	}
 
 	return result;
+    }
+
+    private static Pair<Integer, String> parseSingleLine(String line) {
+
+	String trimmedStr = line.trim();
+	int firstWhiteSpace = trimmedStr.indexOf(' ');
+
+	// check that line contains an id and a non-empty content
+	if (firstWhiteSpace > -1 && trimmedStr.length() > (firstWhiteSpace + 1)) {
+	    try {
+		String idString = trimmedStr.substring(0, firstWhiteSpace);
+		int id = Integer.parseInt(idString);
+
+		String content = trimmedStr.substring(firstWhiteSpace + 1);
+
+		return Pair.of(id, content);
+
+	    } catch (NumberFormatException nfe) {
+		nfe.printStackTrace();
+		return null;
+	    }
+
+	}
+	return null;
+
     }
 
     public static void printSearchResults(File file, String queryID, List<SearchResult> results) {
@@ -251,23 +310,9 @@ public class Utilities {
 	List<String> lines = Utilities.readLinesFromFile(filePath);
 
 	for (String line : lines) {
-	    String trimmedStr = line.trim();
-	    int firstWhiteSpace = trimmedStr.indexOf(' ');
-
-	    // check that line contains an id and a non-empty content
-	    if (firstWhiteSpace > -1 && trimmedStr.length() > (firstWhiteSpace + 1)) {
-		try {
-		    String idString = trimmedStr.substring(0, firstWhiteSpace);
-		    int id = Integer.parseInt(idString);
-
-		    String content = trimmedStr.substring(firstWhiteSpace + 1);
-
-		    results.put(id, content);
-
-		} catch (NumberFormatException nfe) {
-		    nfe.printStackTrace();
-		}
-
+	    Pair<Integer, String> parsedLine = parseSingleLine(line);
+	    if (parsedLine != null) {
+		results.put(parsedLine.first, parsedLine.second);
 	    }
 
 	}
