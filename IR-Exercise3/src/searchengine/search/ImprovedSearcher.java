@@ -1,6 +1,5 @@
 package searchengine.search;
 
-import utils.Utilities;
 import java.io.IOException;
 import java.io.Reader;
 import java.util.Arrays;
@@ -23,22 +22,56 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
+import utils.Utilities;
+
 public class ImprovedSearcher extends BasicSearcher {
 
-	private static final float DATES_BOOST = 3.0f;
-	private static final float REF_BOOST = 2.0f;
-	private static final float KEYWORD_BOOST = 2.0f;
-	
-    protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but",
-						   "by", "for", "if", "in", "into", "is", "it", "no", "not",
-						   "of", "on", "or", "such", "that", "the", "their", "then",
-						   "there", "these", "they", "this", "to", "was", "will",
-						   "with");
+    private static final float DATES_BOOST = 3.0f;
+    private static final float REF_BOOST = 2.0f;
+    private static final float KEYWORD_BOOST = 2.0f;
+
+    protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by",
+	    "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their",
+	    "then", "there", "these", "they", "this", "to", "was", "will", "with");
 
     public ImprovedSearcher(Directory luceneDir) {
 	super(luceneDir);
 	initAnalyzer();
 	TestAnalyzer();
+    }
+
+    private void appendFieldToQuery(StringBuilder str, String field, String value, float boost) {
+	str.append(" OR ");
+	str.append(field);
+	str.append(":(");
+	str.append(value);
+	str.append(")");
+
+	if (boost != 1.0) {
+	    str.append("^");
+	    str.append(boost);
+	}
+    }
+
+    private String improveQuery(String queryStr) {
+	StringBuilder queryBuilder = new StringBuilder(queryStr);
+
+	List<String> dates = Utilities.extractDates(queryStr);
+	if (dates != null && dates.size() > 0) {
+	    appendFieldToQuery(queryBuilder, "dates", Utilities.GenericJoinToStr(dates, " "), DATES_BOOST);
+	}
+
+	List<String> references = Utilities.extractReferences(queryStr);
+	if (references != null && references.size() > 0) {
+	    appendFieldToQuery(queryBuilder, "references", Utilities.GenericJoinToStr(references, " "), REF_BOOST);
+	}
+
+	List<String> keywords = Utilities.extractKeywords(queryStr);
+	if (keywords != null && keywords.size() > 0) {
+	    appendFieldToQuery(queryBuilder, "keywords", Utilities.GenericJoinToStr(keywords, " "), KEYWORD_BOOST);
+	}
+
+	return QueryParser.escape(queryBuilder.toString());
     }
 
     protected void initAnalyzer() {
@@ -62,62 +95,23 @@ public class ImprovedSearcher extends BasicSearcher {
     @Override
     @SuppressWarnings("unchecked")
     public List<ScoreDoc> search(String queryStr) throws IOException {
-    	List<ScoreDoc> docs = Collections.EMPTY_LIST;
+	List<ScoreDoc> docs = Collections.EMPTY_LIST;
 
-    	try {
-    	    QueryParser queryParser = new QueryParser(Version.LUCENE_47, "content", this.analyzer);
-    	    //improves query by trying to parse known fields and boost their match scoring.  
-    	    String improvedQuery = improveQuery(queryStr);
-    	    Query query = queryParser.parse(improvedQuery);
-    	    TopDocs topDocs = this.searcher.search(query, 10000);
+	try {
+	    QueryParser queryParser = new QueryParser(Version.LUCENE_47, "content", this.analyzer);
+	    // improves query by trying to parse known fields and boost their match scoring.
+	    String improvedQuery = improveQuery(queryStr);
+	    Query query = queryParser.parse(improvedQuery);
+	    TopDocs topDocs = this.searcher.search(query, 10000);
 
-    	    if (topDocs.totalHits > 0) {
-    		docs = Arrays.asList(topDocs.scoreDocs);
-    	    }
+	    if (topDocs.totalHits > 0) {
+		docs = Arrays.asList(topDocs.scoreDocs);
+	    }
 
-    	} catch (ParseException e) {
-    	    e.printStackTrace();
-    	}
+	} catch (ParseException e) {
+	    e.printStackTrace();
+	}
 
-    	return docs;
+	return docs;
     }
-    
-	private String improveQuery(String queryStr) {
-		StringBuilder queryBuilder = new StringBuilder(QueryParser.escape(queryStr));
-		
-		List<String> dates = Utilities.extractDates(queryStr);
-		if(dates != null && dates.size() > 0)
-		{
-			appendFieldToQuery(queryBuilder, "dates", Utilities.GenericJoinToStr(dates, " "), DATES_BOOST);
-		}
-		
-		List<String> references = Utilities.extractReferences(queryStr);
-		if(references != null && references.size() > 0)
-		{
-			appendFieldToQuery(queryBuilder, "references", Utilities.GenericJoinToStr(references, " "), REF_BOOST);
-		}
-		
-		List<String> keywords = Utilities.extractKeywords(queryStr);
-		if(keywords != null && keywords.size() > 0)
-		{
-			appendFieldToQuery(queryBuilder, "keywords", Utilities.GenericJoinToStr(keywords, " "), KEYWORD_BOOST);
-		}
-
-		return queryBuilder.toString();
-	}
-	
-	private void appendFieldToQuery(StringBuilder str, String field, String value, float boost)
-	{
-		str.append(" OR ");
-		str.append(field);
-		str.append(":(");
-		str.append(value);
-		str.append(")");
-		
-		if(boost != 1.0)
-		{
-			str.append("^");
-			str.append(boost);
-		}
-	}
 }

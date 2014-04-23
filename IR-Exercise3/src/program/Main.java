@@ -30,11 +30,11 @@ public class Main {
 
     }
 
-    private String	queryFilePath;
-    private String	docsFilePath;
-    private String	outputFilePath;
-    private String	retriveAlgorithmPath;
-    private String	propFilePath;
+    private String queryFilePath;
+    private String docsFilePath;
+    private String outputFilePath;
+    private String retriveAlgorithmPath;
+    private String propFilePath;
     private ISearchEngine luceneInstance;
 
     public Main(String propFilePath) {
@@ -55,6 +55,7 @@ public class Main {
 
     private void IndexDocuments() {
 
+	System.out.println("Info: Parsing documents from the input path: " + this.docsFilePath);
 	List<IRDoc> documents = createDocuments(this.docsFilePath);
 
 	if (documents.isEmpty()) {
@@ -88,12 +89,13 @@ public class Main {
 		    || this.retriveAlgorithmPath == null) {
 		System.out.println("Error: properties file is missing parameters");
 	    } else {
-		//EngineStrategy strategy = EngineStrategy.valueOf(this.retriveAlgorithmPath);
-		//DocFactory.instance.setStrategy(strategy);
+		// EngineStrategy strategy = EngineStrategy.valueOf(this.retriveAlgorithmPath);
+		// DocFactory.instance.setStrategy(strategy);
 		DocFactory.instance.setStrategy(EngineStrategy.Improved);
 
 		this.luceneInstance = BasicSearchEngine.createEngine(this.retriveAlgorithmPath);
 		success = true;
+		System.out.println("Info: finish parsing the input file");
 	    }
 	} catch (IOException ex) {
 	    ex.printStackTrace();
@@ -111,11 +113,14 @@ public class Main {
     }
 
     private void Search() {
+
+	System.out.println("Info: Parsing the query's from file: " + this.queryFilePath);
 	List<IRDoc> documents = createDocuments(this.queryFilePath);
 
 	if (!documents.isEmpty()) {
 	    File outputFile = new File(this.outputFilePath);
 
+	    System.out.println("Info: Searching the querys in our search engine");
 	    List<SearchResult> queryResults;
 	    for (IRDoc doc : documents) {
 		queryResults = this.luceneInstance.search(doc.getContent());
