@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import entities.IRDoc;
+import entities.QueryIdealResult;
 import entities.SearchResult;
 
 public class Utilities {
@@ -165,31 +166,32 @@ public class Utilities {
      * @param filePath
      *            - the path to the truth fie
      * */
-    public static Map<Integer, List<Integer>> getTruthLists(String filePath) {
-	Map<Integer, List<Integer>> truthMap = new HashMap<Integer, List<Integer>>();
+    public static List<QueryIdealResult> getTruthLists(String filePath) {
+	Map<Integer, QueryIdealResult> truthMap = new HashMap<Integer, QueryIdealResult>();
 
-	Map<Integer, String> idAndContent = simpleIRParser(filePath);
 	List<String> linesFromFile = readLinesFromFile(filePath);
 
-	List<Integer> tmp;
+	QueryIdealResult tmp;
 
 	for (String line : linesFromFile) {
 	    Pair<Integer, String> idContent = parseSingleLine(line);
 	    Integer queryId = idContent.first;
 	    String content = idContent.second;
-	    int docId = Integer.parseInt(content.substring(2, content.length() - 2));
+	    String[] splitedContent = content.split(" ");
+	    int docId = Integer.parseInt(splitedContent[1]);
+	    int rank = Integer.parseInt(splitedContent[3]);
 
 	    if (truthMap.containsKey(queryId)) {
 		tmp = truthMap.get(queryId);
 	    } else {
-		tmp = new ArrayList<Integer>();
+		tmp = new QueryIdealResult(queryId);
 		truthMap.put(queryId, tmp);
 	    }
-	    tmp.add(docId);
+	    tmp.addResult(docId, rank);
 
 	}
 
-	return truthMap;
+	return new ArrayList<QueryIdealResult>(truthMap.values());
 
     }
 
