@@ -166,7 +166,7 @@ public class Utilities {
      * @param filePath
      *            - the path to the truth fie
      * */
-    public static List<QueryIdealResult> getTruthLists(String filePath) {
+    public static List<QueryIdealResult> parseTruthLists(String filePath) {
 	Map<Integer, QueryIdealResult> truthMap = new HashMap<Integer, QueryIdealResult>();
 
 	List<String> linesFromFile = readLinesFromFile(filePath);

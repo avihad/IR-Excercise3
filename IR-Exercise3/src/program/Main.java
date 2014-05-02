@@ -19,6 +19,8 @@ import entities.SearchResult;
 
 public class Main {
 
+    private static final String DEFUALT_STOPLIST_PATH = "stoplist.txt";
+
     public static void main(String[] args) {
 	if (args == null || args.length < 1) {
 	    System.out.println("Error: input should contain properties file location");
@@ -36,6 +38,7 @@ public class Main {
     private String retriveAlgorithmPath;
     private String propFilePath;
     private ISearchEngine luceneInstance;
+    private String stopListFilePath;
 
     public Main(String propFilePath) {
 	this.propFilePath = propFilePath;
@@ -84,6 +87,8 @@ public class Main {
 	    this.docsFilePath = prop.getProperty("docsFile");
 	    this.outputFilePath = prop.getProperty("outputFile");
 	    this.retriveAlgorithmPath = prop.getProperty("retrievalAlgorithm");
+	    this.stopListFilePath = prop.getProperty("stoplist");
+	    this.stopListFilePath = this.stopListFilePath.isEmpty() ? DEFUALT_STOPLIST_PATH : this.stopListFilePath;
 
 	    if (this.queryFilePath == null || this.docsFilePath == null || this.outputFilePath == null
 		    || this.retriveAlgorithmPath == null) {
