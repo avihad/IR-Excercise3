@@ -2,11 +2,14 @@ package searchengine.index;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.Arrays;
+import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongField;
@@ -17,6 +20,12 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
 public class BasicIndexer {
+	protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but",
+			   "by", "for", "if", "in", "into", "is", "it", "no", "not",
+			   "of", "on", "or", "such", "that", "the", "their", "then",
+			   "there", "these", "they", "this", "to", "was", "will",
+			   "with");
+	
     protected IndexWriter writer;
     private Directory     luceneDir;
 
@@ -70,8 +79,23 @@ public class BasicIndexer {
     
     protected Analyzer createAnalzyer()
     {
-    	Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_47);
+    	CharArraySet set = new CharArraySet(Version.LUCENE_47, stopwords, true);
+    	Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_47, set);
+    	
     	return analyzer;
+    }
+    
+    public boolean setStopWords(List<String> stopWords)
+    {
+    	boolean result = false;
+    	
+    	if(stopWords != null)
+    	{
+    		this.stopwords.clear();
+    		result = this.stopwords.addAll(stopWords);
+    	}
+    	
+    	return result;
     }
     
     public void TestAnalyzer()

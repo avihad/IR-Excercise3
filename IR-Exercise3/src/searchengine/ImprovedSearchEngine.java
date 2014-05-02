@@ -17,7 +17,8 @@ public class ImprovedSearchEngine extends BasicSearchEngine {
 
 		if (this.indexer == null) {
 			BasicIndexer indexer = new ImprovedIndexer(this.luceneDir);
-
+			indexer.setStopWords(this.stopwords);
+			
 			if (indexer.OpenIndexWriter()) {
 				this.indexer = indexer;
 			}
@@ -33,6 +34,7 @@ public class ImprovedSearchEngine extends BasicSearchEngine {
 					this.searcher.close();
 				}
 				this.searcher = new ImprovedSearcher(this.luceneDir);
+				this.searcher.setStopWords(this.stopwords);
 				this.searcher.Init();
 			} catch (IOException e) {
 				this.searcher = null;

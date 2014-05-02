@@ -30,14 +30,9 @@ public class ImprovedSearcher extends BasicSearcher {
     private static final float REF_BOOST = 2.0f;
     private static final float KEYWORD_BOOST = 2.0f;
 
-    protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by",
-	    "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their",
-	    "then", "there", "these", "they", "this", "to", "was", "will", "with");
 
     public ImprovedSearcher(Directory luceneDir) {
 	super(luceneDir);
-	initAnalyzer();
-	TestAnalyzer();
     }
 
     private void appendFieldToQuery(StringBuilder str, String field, String value, float boost) {
@@ -74,6 +69,7 @@ public class ImprovedSearcher extends BasicSearcher {
 	return QueryParser.escape(queryBuilder.toString());
     }
 
+    @Override
     protected void initAnalyzer() {
 	Analyzer analyzer = new Analyzer() {
 	    @Override
@@ -88,7 +84,7 @@ public class ImprovedSearcher extends BasicSearcher {
 		return new TokenStreamComponents(source, token);
 	    }
 	};
-	// FIXME: will need to create our own analyzer
+	
 	this.analyzer = analyzer;
     }
 

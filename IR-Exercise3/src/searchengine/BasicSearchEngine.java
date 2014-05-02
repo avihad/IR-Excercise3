@@ -18,6 +18,7 @@ import entities.SearchResult;
 
 public class BasicSearchEngine implements ISearchEngine {
 
+	
     public static ISearchEngine createEngine(String algType) throws IOException {
 	ISearchEngine searchEngine;
 
@@ -26,6 +27,7 @@ public class BasicSearchEngine implements ISearchEngine {
 	} else {
 	    searchEngine = new BasicSearchEngine("base_lucene_index");
 	}
+	
 	return searchEngine;
     }
 
@@ -34,17 +36,20 @@ public class BasicSearchEngine implements ISearchEngine {
     protected Directory     luceneDir;
     protected BasicSearcher searcher;
     protected List<IRDoc>   idexedDocs;
+    protected List<String> stopwords;
 
     protected BasicSearchEngine(String sIndexDir) throws IOException {
 	this.luceneDir = FSDirectory.open(new File(sIndexDir));
 	this.indexChanged = false;
+	this.stopwords = null; 
     }
 
     protected synchronized BasicIndexer getIndexWriter() {
 
 	if (this.indexer == null) {
 	    BasicIndexer indexer = new BasicIndexer(this.luceneDir);
-
+	    this.indexer.setStopWords(this.stopwords);
+	    
 	    if (indexer.OpenIndexWriter()) {
 		this.indexer = indexer;
 	    }
@@ -61,6 +66,7 @@ public class BasicSearchEngine implements ISearchEngine {
 		}
 
 		this.searcher = new BasicSearcher(this.luceneDir);
+		this.searcher.setStopWords(this.stopwords);
 		this.searcher.Init();
 	    } catch (IOException e) {
 		this.searcher = null;
@@ -105,6 +111,11 @@ public class BasicSearchEngine implements ISearchEngine {
 	return documents.size() == indexedDocsCount;
     }
 
+    public void setStopwords(List<String> stopwords)
+    {
+    	this.stopwords = stopwords;
+    }
+    
     @Override
     public List<SearchResult> search(String query) {
 	List<SearchResult> result = new LinkedList<SearchResult>();

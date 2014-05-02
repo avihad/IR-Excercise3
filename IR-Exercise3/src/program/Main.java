@@ -39,6 +39,7 @@ public class Main {
     private String propFilePath;
     private ISearchEngine luceneInstance;
     private String stopListFilePath;
+    private List<String> stoplist;
 
     public Main(String propFilePath) {
 	this.propFilePath = propFilePath;
@@ -99,6 +100,7 @@ public class Main {
 		DocFactory.instance.setStrategy(EngineStrategy.Improved);
 
 		this.luceneInstance = BasicSearchEngine.createEngine(this.retriveAlgorithmPath);
+		this.luceneInstance.setStopwords(this.stoplist);
 		success = true;
 		System.out.println("Info: finish parsing the input file");
 	    }

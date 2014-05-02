@@ -1,8 +1,6 @@
 package searchengine.index;
 
 import java.io.Reader;
-import java.util.Arrays;
-import java.util.List;
 
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
@@ -18,12 +16,6 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
 public class ImprovedIndexer extends BasicIndexer {
-
-    protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but",
-						   "by", "for", "if", "in", "into", "is", "it", "no", "not",
-						   "of", "on", "or", "such", "that", "the", "their", "then",
-						   "there", "these", "they", "this", "to", "was", "will",
-						   "with");
 
     public ImprovedIndexer(Directory luceneDir) {
 	super(luceneDir);

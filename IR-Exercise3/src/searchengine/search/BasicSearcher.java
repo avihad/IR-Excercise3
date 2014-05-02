@@ -10,6 +10,7 @@ import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
+import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -24,6 +25,12 @@ import org.apache.lucene.util.Version;
 
 public class BasicSearcher {
 
+	protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but",
+			   "by", "for", "if", "in", "into", "is", "it", "no", "not",
+			   "of", "on", "or", "such", "that", "the", "their", "then",
+			   "there", "these", "they", "this", "to", "was", "will",
+			   "with");
+	
     private Directory       luceneDir;
     protected IndexSearcher searcher;
     private IndexReader     reader;
@@ -31,9 +38,13 @@ public class BasicSearcher {
 
     public BasicSearcher(Directory luceneDir) {
 	this.luceneDir = luceneDir;
-	this.analyzer = new StandardAnalyzer(Version.LUCENE_47);
     }
 
+    public void init()
+    {
+    	initAnalyzer();
+    }
+    
     public void close() {
 	try {
 	    if (this.reader != null) {
@@ -86,6 +97,20 @@ public class BasicSearcher {
 
 	return docs;
     }
+    
+    public boolean setStopWords(List<String> stopWords)
+    {
+    	boolean result = false;
+    	
+    	if(stopWords != null)
+    	{
+    		this.stopwords.clear();
+    		result = this.stopwords.addAll(stopWords);
+    	}
+    	
+    	return result;
+    }
+    
 
     public void TestAnalyzer() {
 	try {
@@ -108,6 +133,12 @@ public class BasicSearcher {
 	} catch (Exception ex) {
 
 	}
+    }
+
+    protected void initAnalyzer() {
+    	CharArraySet set = new CharArraySet(Version.LUCENE_47, stopwords, true);
+    	this.analyzer = new StandardAnalyzer(Version.LUCENE_47, set);
+
     }
 
 }
