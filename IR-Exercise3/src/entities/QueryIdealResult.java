@@ -20,7 +20,7 @@ public class QueryIdealResult {
 	this.docsByRank = new HashMap<Integer, Integer>();
     }
     
-    public int numOfResults()
+    public int getSize()
     {
     	return this.docsIdToRank.size();
     }

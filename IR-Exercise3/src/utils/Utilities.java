@@ -336,7 +336,7 @@ public class Utilities {
 		List<Integer> calculatedNResults = (calculatedResults.size() > n) ? calculatedResults.subList(0, n) : calculatedResults;
 		
 		int intersection = 0;
-		int size = (n > idealResults.numOfResults()) ? idealResults.numOfResults() : n;
+		int size = (n > idealResults.getSize()) ? idealResults.getSize() : n;
 				
 		for(int i = 0; i < size; i++)
 		{
@@ -354,5 +354,56 @@ public class Utilities {
     	
     	return result;
     }
+	
+	/**
+	 * Calculates the Mean Average Precision (MAP)
+	 * @param calculatedResults - results received by search
+	 * @param idealResults - relevant documents
+	 * @return MAP
+	 */
+	public static double meanAveragePrecision(List<Integer> calculatedResults, QueryIdealResult idealResults){
+		
+		double map;
+		double precisionSum = 0.0;
+
+		Map<Integer, Integer> rankByDocId = rankedDocListToMap(calculatedResults);
+		
+		for(int i = 0; i < idealResults.getSize(); i++)
+		{
+			//get docId at rank i from relevant results
+			int curDocId = idealResults.getDocByRank(i);
+			
+			//find rank of document in calculated results
+			Integer docRank = rankByDocId.get(curDocId);
+			
+			//if doc was retrieved in calculated result find P@docRank
+			//else we give precision sum of 0 to current docId
+			if(docRank != null)
+			{
+				precisionSum += PrecisionAtN(docRank, calculatedResults, idealResults);
+			}
+		}
+		
+		map = precisionSum / idealResults.getSize();
+		
+		return map;
+	}
+	
+	/**
+	 * Turns an ordered list to a Map
+	 * @param orderedList - an ordered list of ids
+	 * @return Map where Key={docId}, Value={rank}
+	 */
+	private static Map<Integer,Integer> rankedDocListToMap(List<Integer> orderedList)
+	{
+		Map<Integer, Integer> rankByDocId = new HashMap<Integer, Integer>();
+		
+		for(int i = 0; i < orderedList.size(); i++)
+		{
+			rankByDocId.put(orderedList.get(i), i);
+		}
+		
+		return rankByDocId;
+	}
  
 }
