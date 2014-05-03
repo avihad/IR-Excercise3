@@ -92,7 +92,7 @@ public class BasicSearchEngine implements ISearchEngine {
 	if (indexer != null) {
 	    Document doc;
 	    for (IRDoc myDoc : documents) {
-		doc = indexer.createDocument(myDoc.getId(), myDoc.getContent());
+	    doc = myDoc.createDocument();
 
 		if (doc != null) {
 		    try {
