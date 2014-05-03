@@ -336,13 +336,13 @@ public class Utilities {
 		List<Integer> calculatedNResults = (calculatedResults.size() > n) ? calculatedResults.subList(0, n) : calculatedResults;
 		
 		int intersection = 0;
-		int size = (n > idealResults.getSize()) ? idealResults.getSize() : n;
+		int idealNSize = (n > idealResults.getSize()) ? idealResults.getSize() : n;
 				
-		for(int i = 0; i < size; i++)
+		for(int i = 0; i < idealNSize; i++)
 		{
-			for(int j = 0; j < size; j++)
+			for(int j = 0; j < calculatedNResults.size(); j++)
 			{
-				if(calculatedNResults.get(j) == idealResults.getDocByRank(i))
+				if(calculatedNResults.get(j) == idealResults.getDocByIndex(i))
 				{
 					intersection++;
 					break;
@@ -350,7 +350,8 @@ public class Utilities {
 			}
 		}
 		
-    	double result = (1.0 * intersection) / size;
+		int denominator = (calculatedNResults.size() > idealNSize) ? calculatedNResults.size() : idealNSize; 
+    	double result = (1.0 * intersection) / denominator;
     	
     	return result;
     }
@@ -371,7 +372,7 @@ public class Utilities {
 		for(int i = 0; i < idealResults.getSize(); i++)
 		{
 			//get docId at rank i from relevant results
-			int curDocId = idealResults.getDocByRank(i);
+			int curDocId = idealResults.getDocByIndex(i);
 			
 			//find rank of document in calculated results
 			Integer docRank = rankByDocId.get(curDocId);
