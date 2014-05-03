@@ -31,7 +31,7 @@ public class QueryIdealResult {
 	
 	if(result)
 	{
-		docsByRank.put(rank, docId);
+		docsByRank.put(this.docsIdToRank.size(), docId);
 	}
 	
 	return result;
@@ -53,11 +53,11 @@ public class QueryIdealResult {
     {
     	int result = -1;
     	
-    	for(Pair<Integer, Integer> pair : docsIdToRank)
+    	for(int i = 0; i < docsIdToRank.size(); i++)
     	{
-    		if(pair.first == docId)
+    		if(docsIdToRank.get(i).first == docId)
     		{
-    			result = pair.second;
+    			result = i+1;
     			break;
     		}
     	}
