@@ -1,14 +1,23 @@
 package entities;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.TextField;
 
+import utils.Pair;
+
 public class BasicIRDoc implements IRDoc {
     public static IRDoc create(int docId, String content) {
-
-	return new BasicIRDoc(docId, content);
+    	Pair<String, List<Integer>> contentReferencesPair = sparateContentAndReferences(content);
+    	List<Integer> docReferences = contentReferencesPair.second;
+    	String docContent = contentReferencesPair.first;
+    	
+	return new BasicIRDoc(docId, docContent, docReferences);
     }
    
     private final int    id;
@@ -16,11 +25,42 @@ public class BasicIRDoc implements IRDoc {
     private final String content;
     
     protected float boost;
+    
+    protected final List<Integer> references;
 
-    protected BasicIRDoc(int docId, String content) {
+    protected BasicIRDoc(int docId, String content, List<Integer> references) {
 	this.id = docId;
 	this.content = content;
+	this.references = Collections.unmodifiableList(references);
 	this.boost = 1.0f;
+    }
+    
+    protected static Pair<String, List<Integer>> sparateContentAndReferences(String content) {
+
+    	String fixedContent = content;
+    	List<Integer> references = Collections.EMPTY_LIST;
+    	String referenceIndication = "References:";
+    	int referencesIndex = content.lastIndexOf(referenceIndication);
+    	if (referencesIndex > 0) {
+    	    fixedContent = content.substring(0, referencesIndex);
+    	    references = parseReferences(content.substring(referencesIndex + referenceIndication.length()));
+    	}
+    	return Pair.of(fixedContent, references);
+        }
+
+    private static List<Integer> parseReferences(String referencesString) {
+	List<Integer> references = new ArrayList<Integer>();
+	String[] refStrings = referencesString.split(",");
+
+		for (String reference : refStrings) {
+			try {
+				int ref = Integer.parseInt(reference.trim());
+				references.add(ref);
+			} catch (Exception ex) {
+			}
+		}
+
+	return references;
     }
     
     public void setDocBoost(float boost)
@@ -39,7 +79,6 @@ public class BasicIRDoc implements IRDoc {
 	newDoc.add(f);
 	
 	f = new LongField("id", this.id, Field.Store.YES);
-	f.setBoost(this.boost);
 	newDoc.add(f);
 
 	return newDoc;
@@ -54,6 +93,16 @@ public class BasicIRDoc implements IRDoc {
     @Override
     public int getId() {
 	return this.id;
+    }
+    
+    public List<Integer> getReferences() {
+    	return this.references;
+        }
+    
+    public BasicIRDoc Clone()
+    {
+    	BasicIRDoc newDoc = new BasicIRDoc(this.getId(), this.getContent(), this.getReferences());
+    	return newDoc;
     }
 
 }

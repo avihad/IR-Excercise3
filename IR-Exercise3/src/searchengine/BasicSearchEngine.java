@@ -3,8 +3,10 @@ package searchengine;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.search.ScoreDoc;
@@ -18,7 +20,6 @@ import entities.SearchResult;
 
 public class BasicSearchEngine implements ISearchEngine {
 
-	
     public static ISearchEngine createEngine(String algType) throws IOException {
 	ISearchEngine searchEngine;
 
@@ -27,21 +28,41 @@ public class BasicSearchEngine implements ISearchEngine {
 	} else {
 	    searchEngine = new BasicSearchEngine("base_lucene_index");
 	}
-	
+
 	return searchEngine;
     }
 
-    protected boolean       indexChanged;
-    protected BasicIndexer  indexer;
-    protected Directory     luceneDir;
+    protected boolean indexChanged;
+    protected BasicIndexer indexer;
+    protected Directory luceneDir;
     protected BasicSearcher searcher;
-    protected List<IRDoc>   idexedDocs;
+    protected List<IRDoc> idexedDocs;
     protected List<String> stopwords;
+    protected Map<Integer, Integer> referencesCountMap;
 
     protected BasicSearchEngine(String sIndexDir) throws IOException {
 	this.luceneDir = FSDirectory.open(new File(sIndexDir));
 	this.indexChanged = false;
-	this.stopwords = null; 
+	this.stopwords = null;
+	this.referencesCountMap = new HashMap<Integer, Integer>();
+    }
+
+    protected void createDocReferencesMap(List<IRDoc> documents) {
+	Integer temp;
+	for (IRDoc doc : documents) {
+	    if (doc.getReferences() != null) {
+		for (Integer id : doc.getReferences()) {
+		    temp = this.referencesCountMap.get(id);
+
+		    if (temp == null || temp == 0) {
+			this.referencesCountMap.put(id, 1);
+		    } else {
+			temp++;
+			this.referencesCountMap.put(id, temp);
+		    }
+		}
+	    }
+	}
     }
 
     protected synchronized BasicIndexer getIndexWriter() {
@@ -49,7 +70,7 @@ public class BasicSearchEngine implements ISearchEngine {
 	if (this.indexer == null) {
 	    BasicIndexer indexer = new BasicIndexer(this.luceneDir);
 	    indexer.setStopWords(this.stopwords);
-	    
+
 	    if (indexer.OpenIndexWriter()) {
 		this.indexer = indexer;
 	    }
@@ -111,11 +132,6 @@ public class BasicSearchEngine implements ISearchEngine {
 	return documents.size() == indexedDocsCount;
     }
 
-    public void setStopwords(List<String> stopwords)
-    {
-    	this.stopwords = stopwords;
-    }
-    
     @Override
     public List<SearchResult> search(String query) {
 	List<SearchResult> result = new LinkedList<SearchResult>();
@@ -131,8 +147,8 @@ public class BasicSearchEngine implements ISearchEngine {
 		    Document tempDoc = searcher.getDoc(doc.doc);
 		    id = tempDoc.get("id");
 		    // FIXME: need to give a proper threshold
-		    if (!docsIdsCovered.contains(id) && doc.score > 0.1) {
-			result.add(new SearchResult(id, doc.score));
+		    if (!docsIdsCovered.contains(id) && doc.score > 0.05) {
+			result.add(new SearchResult(Integer.valueOf(id), doc.score));
 			docsIdsCovered.add(id);
 		    }
 		}
@@ -144,4 +160,22 @@ public class BasicSearchEngine implements ISearchEngine {
 
 	return result;
     }
+
+    private IRDoc setDocReferences(IRDoc myDoc) {
+
+	IRDoc doc = myDoc.Clone();
+	Integer refCount = this.referencesCountMap.get(myDoc.getId());
+
+	if (refCount != null && refCount > 0) {
+	    doc.setDocBoost((refCount / 10.0f) + 1);
+	}
+
+	return doc;
+    }
+
+    @Override
+    public void setStopwords(List<String> stopwords) {
+	this.stopwords = stopwords;
+    }
+
 }

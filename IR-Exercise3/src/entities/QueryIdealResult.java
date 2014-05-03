@@ -10,9 +10,10 @@ public class QueryIdealResult {
 
     private final int queryId;
     private final Map<Integer, Integer> docsIdToRank;
+
     private final Map<Integer, Integer> docsByRank;
-    
     private final Map<Integer, Integer> docsByIndex;
+
     private final Map<Integer, Integer> indexByDoc;
     private int curDocIndex;
 
@@ -31,9 +32,9 @@ public class QueryIdealResult {
 
 	this.docsIdToRank.put(docId, rank);
 	this.docsByRank.put(rank, docId);
-	this.docsByIndex.put(curDocIndex, docId);
-	this.indexByDoc.put(docId, curDocIndex);
-	curDocIndex++;
+	this.docsByIndex.put(this.curDocIndex, docId);
+	this.indexByDoc.put(docId, this.curDocIndex);
+	this.curDocIndex++;
 
     }
 
@@ -55,7 +56,7 @@ public class QueryIdealResult {
 	List<Integer> docRank = new ArrayList<Integer>();
 	int temp;
 	for (Integer docId : docList) {
-		temp = (this.docsIdToRank.get(docId) == null) ? 0 : this.docsIdToRank.get(docId); 
+	    temp = (this.docsIdToRank.get(docId) == null) ? 0 : this.docsIdToRank.get(docId);
 
 	    docRank.add(temp);
 	}
@@ -66,8 +67,28 @@ public class QueryIdealResult {
 	return IDCG != 0 ? DCG / IDCG : 0;
     }
 
+    public int getDocByIndex(int index) {
+	Integer result = this.docsByIndex.get(index);
+
+	if (result == null) {
+	    result = -1;
+	}
+
+	return result;
+    }
+
     public int getDocByRank(int rank) {
 	Integer result = this.docsByRank.get(rank);
+
+	if (result == null) {
+	    result = -1;
+	}
+
+	return result;
+    }
+
+    public int getDocIndex(int docId) {
+	Integer result = this.indexByDoc.get(docId);
 
 	if (result == null) {
 	    result = -1;
@@ -81,28 +102,8 @@ public class QueryIdealResult {
 	return this.docsIdToRank.get(docId);
     }
 
-    public int getDocIndex(int docId)
-    {
-    	Integer result = this.indexByDoc.get(docId);
-
-    	if(result == null)
-    	{
-    		result = -1;
-    	}
-    	
-    	return result;
-    }
-
-    public int getDocByIndex(int index)
-    {
-    	Integer result = this.docsByIndex.get(index);
-
-    	if(result == null)
-    	{
-    		result = -1;
-    	}
-
-    	return result;
+    public int getQueryId() {
+	return this.queryId;
     }
 
     public int getSize() {
