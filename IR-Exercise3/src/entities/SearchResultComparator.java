@@ -17,7 +17,7 @@ public class SearchResultComparator implements Comparator<SearchResult> {
 	}
 
 	int compResult = Double.compare(o1.getScore(), o2.getScore());
-	return compResult != 0 ? compResult : Integer.compare(o1.getDocId(), o2.getDocId());
+	return compResult != 0 ? compResult :Integer.valueOf(o1.getDocId()).compareTo(o2.getDocId());
     }
 
 }
