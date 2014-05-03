@@ -89,7 +89,7 @@ public class Main {
 	    this.outputFilePath = prop.getProperty("outputFile");
 	    this.retriveAlgorithmPath = prop.getProperty("retrievalAlgorithm");
 	    this.stopListFilePath = prop.getProperty("stoplist");
-	    this.stopListFilePath = this.stopListFilePath.isEmpty() ? DEFUALT_STOPLIST_PATH : this.stopListFilePath;
+	    this.stopListFilePath = (this.stopListFilePath == null || this.stopListFilePath.isEmpty()) ? DEFUALT_STOPLIST_PATH : this.stopListFilePath;
 
 	    if (this.queryFilePath == null || this.docsFilePath == null || this.outputFilePath == null
 		    || this.retriveAlgorithmPath == null) {
