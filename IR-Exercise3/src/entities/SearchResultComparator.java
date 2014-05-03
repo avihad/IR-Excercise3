@@ -10,14 +10,14 @@ public class SearchResultComparator implements Comparator<SearchResult> {
 	    if (o2 == null) {
 		return 0;
 	    } else {
-		return -1;
+		return 1;
 	    }
 	} else if (o2 == null) {
-	    return 1;
+	    return -1;
 	}
 
-	int compResult = Double.compare(o1.getScore(), o2.getScore());
-	return compResult != 0 ? compResult :Integer.valueOf(o1.getDocId()).compareTo(o2.getDocId());
+	int compResult = -1 * Double.compare(o1.getScore(), o2.getScore());
+	return compResult != 0 ? compResult : -1 * Integer.valueOf(o1.getDocId()).compareTo(o2.getDocId());
     }
 
 }
