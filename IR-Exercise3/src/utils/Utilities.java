@@ -283,9 +283,8 @@ public class Utilities {
 		}
 	    }
 	}
-
-	int denominator = (calculatedNResults.size() > idealNSize) ? calculatedNResults.size() : idealNSize;
-	double result = (1.0 * intersection) / denominator;
+	
+	double result = (1.0 * intersection) / idealNSize;
 
 	return result;
     }
