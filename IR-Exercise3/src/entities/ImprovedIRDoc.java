@@ -84,9 +84,20 @@ public class ImprovedIRDoc extends BasicIRDoc {
     @Override
     public Document createDocument() {
     	Document newDoc = super.createDocument();
-    	newDoc.add(new TextField("references", Utilities.GenericJoinToStr(this.references, " "), Field.Store.YES));
-    	newDoc.add(new TextField("keywords", Utilities.GenericJoinToStr(this.keywords, " "), Field.Store.YES));
-    	newDoc.add(new TextField("dates", Utilities.GenericJoinToStr(this.dates, " "), Field.Store.YES));
+    	
+    	Field f;
+    	
+    	f = new TextField("references", Utilities.GenericJoinToStr(this.references, " "), Field.Store.YES);
+    	f.setBoost(1.0f * this.boost);
+    	newDoc.add(f);
+    	
+    	f = new TextField("keywords", Utilities.GenericJoinToStr(this.keywords, " "), Field.Store.YES);
+    	f.setBoost(4.0f * this.boost);
+    	newDoc.add(f);
+    	
+    	f = new TextField("dates", Utilities.GenericJoinToStr(this.dates, " "), Field.Store.YES);
+    	f.setBoost(1.5f * this.boost);
+    	newDoc.add(f);
 
     	return newDoc;
     }
