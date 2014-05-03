@@ -39,11 +39,6 @@ public class BasicSearcher {
     public BasicSearcher(Directory luceneDir) {
 	this.luceneDir = luceneDir;
     }
-
-    public void init()
-    {
-    	initAnalyzer();
-    }
     
     public void close() {
 	try {
@@ -73,6 +68,7 @@ public class BasicSearcher {
     }
 
     public void Init() throws IOException {
+    initAnalyzer();
 	this.reader = DirectoryReader.open(this.luceneDir);
 	this.searcher = new IndexSearcher(this.reader);
     }

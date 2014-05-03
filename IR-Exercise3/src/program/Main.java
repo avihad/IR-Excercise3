@@ -150,6 +150,8 @@ public class Main {
 
 	// read queries from file and search against index
 	Search();
+	
+	System.out.println("Info: Finished searching");
     }
 
 }

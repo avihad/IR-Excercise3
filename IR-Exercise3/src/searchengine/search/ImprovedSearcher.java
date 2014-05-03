@@ -50,7 +50,7 @@ public class ImprovedSearcher extends BasicSearcher {
 
     private String improveQuery(String queryStr) {
 	StringBuilder queryBuilder = new StringBuilder(QueryParser.escape(queryStr));
-
+	
 	List<String> dates = Utilities.extractDates(queryStr);
 	if (dates != null && dates.size() > 0) {
 	    appendFieldToQuery(queryBuilder, "dates", Utilities.GenericJoinToStr(dates, " "), DATES_BOOST);
@@ -58,12 +58,12 @@ public class ImprovedSearcher extends BasicSearcher {
 
 	List<String> references = Utilities.extractReferences(queryStr);
 	if (references != null && references.size() > 0) {
-	    appendFieldToQuery(queryBuilder, "references", Utilities.GenericJoinToStr(references, " "), REF_BOOST);
+	    appendFieldToQuery(queryBuilder, "references", QueryParser.escape(Utilities.GenericJoinToStr(references, " ")), REF_BOOST);
 	}
 
 	List<String> keywords = Utilities.extractKeywords(queryStr);
 	if (keywords != null && keywords.size() > 0) {
-	    appendFieldToQuery(queryBuilder, "keywords", Utilities.GenericJoinToStr(keywords, " "), KEYWORD_BOOST);
+	    appendFieldToQuery(queryBuilder, "keywords", QueryParser.escape(Utilities.GenericJoinToStr(keywords, " ")), KEYWORD_BOOST);
 	}
 	
 	String query = queryBuilder.toString().replace(" or ", " OR ").replace(" and ", " AND ");

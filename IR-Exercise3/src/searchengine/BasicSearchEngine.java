@@ -48,7 +48,7 @@ public class BasicSearchEngine implements ISearchEngine {
 
 	if (this.indexer == null) {
 	    BasicIndexer indexer = new BasicIndexer(this.luceneDir);
-	    this.indexer.setStopWords(this.stopwords);
+	    indexer.setStopWords(this.stopwords);
 	    
 	    if (indexer.OpenIndexWriter()) {
 		this.indexer = indexer;
