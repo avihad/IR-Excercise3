@@ -8,7 +8,7 @@ import entities.SearchResult;
 public interface ISearchEngine {
     Boolean index(List<IRDoc> documents);
 
-    List<SearchResult> search(String query);
-    
+    List<SearchResult> search(IRDoc doc);
+
     void setStopwords(List<String> stopwords);
 }

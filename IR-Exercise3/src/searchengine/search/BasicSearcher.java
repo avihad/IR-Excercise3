@@ -23,23 +23,23 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
+import entities.IRDoc;
+
 public class BasicSearcher {
 
-	protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but",
-			   "by", "for", "if", "in", "into", "is", "it", "no", "not",
-			   "of", "on", "or", "such", "that", "the", "their", "then",
-			   "there", "these", "they", "this", "to", "was", "will",
-			   "with");
-	
-    private Directory       luceneDir;
+    protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by",
+	    "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their",
+	    "then", "there", "these", "they", "this", "to", "was", "will", "with");
+
+    private Directory luceneDir;
     protected IndexSearcher searcher;
-    private IndexReader     reader;
-    protected Analyzer      analyzer;
+    private IndexReader reader;
+    protected Analyzer analyzer;
 
     public BasicSearcher(Directory luceneDir) {
 	this.luceneDir = luceneDir;
     }
-    
+
     public void close() {
 	try {
 	    if (this.reader != null) {
@@ -68,18 +68,24 @@ public class BasicSearcher {
     }
 
     public void Init() throws IOException {
-    initAnalyzer();
+	initAnalyzer();
 	this.reader = DirectoryReader.open(this.luceneDir);
 	this.searcher = new IndexSearcher(this.reader);
     }
 
+    protected void initAnalyzer() {
+	CharArraySet set = new CharArraySet(Version.LUCENE_47, this.stopwords, true);
+	this.analyzer = new StandardAnalyzer(Version.LUCENE_47, set);
+
+    }
+
     @SuppressWarnings("unchecked")
-    public List<ScoreDoc> search(String queryStr) throws IOException {
+    public List<ScoreDoc> search(IRDoc doc) throws IOException {
 	List<ScoreDoc> docs = Collections.EMPTY_LIST;
 
 	try {
 	    QueryParser queryParser = new QueryParser(Version.LUCENE_47, "content", this.analyzer);
-	    String escapeQueryStr = QueryParser.escape(queryStr);
+	    String escapeQueryStr = QueryParser.escape(doc.getContent());
 	    Query query = queryParser.parse(escapeQueryStr);
 	    TopDocs topDocs = this.searcher.search(query, 10000);
 
@@ -93,20 +99,17 @@ public class BasicSearcher {
 
 	return docs;
     }
-    
-    public boolean setStopWords(List<String> stopWords)
-    {
-    	boolean result = false;
-    	
-    	if(stopWords != null)
-    	{
-    		this.stopwords.clear();
-    		result = this.stopwords.addAll(stopWords);
-    	}
-    	
-    	return result;
+
+    public boolean setStopWords(List<String> stopWords) {
+	boolean result = false;
+
+	if (stopWords != null) {
+	    this.stopwords.clear();
+	    result = this.stopwords.addAll(stopWords);
+	}
+
+	return result;
     }
-    
 
     public void TestAnalyzer() {
 	try {
@@ -129,12 +132,6 @@ public class BasicSearcher {
 	} catch (Exception ex) {
 
 	}
-    }
-
-    protected void initAnalyzer() {
-    	CharArraySet set = new CharArraySet(Version.LUCENE_47, stopwords, true);
-    	this.analyzer = new StandardAnalyzer(Version.LUCENE_47, set);
-
     }
 
 }

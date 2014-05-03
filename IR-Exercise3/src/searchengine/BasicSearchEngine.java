@@ -15,18 +15,24 @@ import org.apache.lucene.store.FSDirectory;
 
 import searchengine.index.BasicIndexer;
 import searchengine.search.BasicSearcher;
+import entities.EngineStrategy;
 import entities.IRDoc;
 import entities.SearchResult;
 
 public class BasicSearchEngine implements ISearchEngine {
 
-    public static ISearchEngine createEngine(String algType) throws IOException {
+    public static ISearchEngine createEngine(EngineStrategy strategy) throws IOException {
 	ISearchEngine searchEngine;
 
-	if (algType != null && algType.equalsIgnoreCase("improved")) {
+	switch (strategy) {
+	case Improved:
 	    searchEngine = new ImprovedSearchEngine("improved_lucene_index");
-	} else {
+	    break;
+	case Basic:
+	default:
 	    searchEngine = new BasicSearchEngine("base_lucene_index");
+	    break;
+
 	}
 
 	return searchEngine;
@@ -133,14 +139,14 @@ public class BasicSearchEngine implements ISearchEngine {
     }
 
     @Override
-    public List<SearchResult> search(String query) {
+    public List<SearchResult> search(IRDoc irDoc) {
 	List<SearchResult> result = new LinkedList<SearchResult>();
 	List<String> docsIdsCovered = new ArrayList<String>();
 	BasicSearcher searcher = getSearcher();
 
 	if (searcher != null) {
 	    try {
-		List<ScoreDoc> docs = searcher.search(query);
+		List<ScoreDoc> docs = searcher.search(irDoc);
 		String id;
 		for (ScoreDoc doc : docs) {
 		    Document tempDoc = searcher.getDoc(doc.doc);

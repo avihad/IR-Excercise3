@@ -110,11 +110,11 @@ public class Main {
 		    || this.retriveAlgorithmPath == null) {
 		System.out.println("Error: properties file is missing parameters");
 	    } else {
-		// EngineStrategy strategy = EngineStrategy.valueOf(this.retriveAlgorithmPath);
-		// DocFactory.instance.setStrategy(strategy);
-		DocFactory.instance.setStrategy(EngineStrategy.Improved);
+		EngineStrategy strategy = this.retriveAlgorithmPath.equals("improved") ? EngineStrategy.Improved
+			: EngineStrategy.Basic;
+		DocFactory.instance.setStrategy(strategy);
 
-		this.luceneInstance = BasicSearchEngine.createEngine(this.retriveAlgorithmPath);
+		this.luceneInstance = BasicSearchEngine.createEngine(strategy);
 		this.luceneInstance.setStopwords(this.stoplist);
 		success = true;
 		System.out.println("Info: finish parsing the input file");
@@ -145,7 +145,7 @@ public class Main {
 	    System.out.println("Info: Searching the querys in our search engine");
 	    List<SearchResult> queryResults;
 	    for (IRDoc doc : documents) {
-		queryResults = this.luceneInstance.search(doc.getContent());
+		queryResults = this.luceneInstance.search(doc);
 		Collections.sort(queryResults, new SearchResultComparator());
 		this.queryToResultsMap.put(doc.getId(), queryResults);
 		Utilities.printSearchResults(outputFile, Integer.toString(doc.getId()), queryResults);
