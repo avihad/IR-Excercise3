@@ -61,7 +61,7 @@ public class QueryIdealResult {
 	    docRank.add(temp);
 	}
 	double DCG = calcDCG(docRank);
-	Collections.sort(docRank);
+	Collections.sort(docRank, Collections.reverseOrder());
 	double IDCG = calcDCG(docRank);
 
 	return IDCG != 0 ? DCG / IDCG : 0;

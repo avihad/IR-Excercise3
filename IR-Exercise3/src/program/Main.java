@@ -1,9 +1,12 @@
 package program;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -172,22 +175,54 @@ public class Main {
 
     private void testing() {
 
-	Map<Integer, QueryIdealResult> queryTruthResults = Utilities.parseTruthLists(this.truthFilePath);
+	BufferedWriter bw = null;
+	try {
+	    bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("testing.csv")));
+	    Map<Integer, QueryIdealResult> queryTruthResults = Utilities.parseTruthLists(this.truthFilePath);
+	    StringBuffer sb = new StringBuffer();
+	    sb.append("queryId,NDCG,presi5,presi10,meanAvgPre");
+	    bw.write(sb.toString());
+	    bw.newLine();
+	    for (Map.Entry<Integer, List<SearchResult>> queryResult : this.queryToResultsMap.entrySet()) {
 
-	for (Map.Entry<Integer, List<SearchResult>> queryResult : this.queryToResultsMap.entrySet()) {
+		List<Integer> docsIds = SearchResult.extractIds(queryResult);
 
-	    List<Integer> docsIds = SearchResult.extractIds(queryResult);
+		QueryIdealResult queryIdealResult = queryTruthResults.get(queryResult.getKey());
+		if (queryIdealResult == null) {
+		    continue;
+		}
+		sb = new StringBuffer();
 
-	    QueryIdealResult queryIdealResult = queryTruthResults.get(queryResult.getKey());
-	    if (queryIdealResult == null) {
-		continue;
+		double ndcgValue = queryIdealResult.calcNDCG(docsIds);
+		double precisionAt5 = Utilities.PrecisionAtN(5, docsIds, queryIdealResult);
+		double precisionAt10 = Utilities.PrecisionAtN(10, docsIds, queryIdealResult);
+		double meanAveragePrecision = Utilities.meanAveragePrecision(docsIds, queryIdealResult);
+
+		sb.append(queryResult.getKey());
+		sb.append(",");
+		sb.append(ndcgValue);
+		sb.append(",");
+		sb.append(precisionAt5);
+		sb.append(",");
+		sb.append(precisionAt10);
+		sb.append(",");
+		sb.append(meanAveragePrecision);
+
+		bw.write(sb.toString());
+		bw.newLine();
 	    }
-	    double ndcgValue = queryIdealResult.calcNDCG(docsIds);
-	    double precisionAt5 = Utilities.PrecisionAtN(5, docsIds, queryIdealResult);
-	    double precisionAt10 = Utilities.PrecisionAtN(10, docsIds, queryIdealResult);
-	    double meanAveragePrecision = Utilities.meanAveragePrecision(docsIds, queryIdealResult);
-	    System.out.println("NDCG: " + ndcgValue + " presi5: " + precisionAt5 + " presi10 " + precisionAt10
-		    + " meanAvgPre: " + meanAveragePrecision);
+	    bw.flush();
+	} catch (IOException e) {
+	    e.printStackTrace();
+	} finally {
+	    if (bw != null) {
+		try {
+		    bw.close();
+		} catch (IOException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
+	    }
 	}
     }
 
