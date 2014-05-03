@@ -207,6 +207,18 @@ public class Utilities {
 	return map;
     }
 
+    public static List<String> parseFileIntoTokens(String filePath) {
+	List<String> tokens = new ArrayList<String>();
+	List<String> lines = Utilities.readLinesFromFile(filePath);
+
+	for (String line : lines) {
+	    tokens.addAll(Arrays.asList(line.split(" ")));
+	}
+
+	return tokens;
+
+    }
+
     private static Pair<Integer, String> parseSingleLine(String line) {
 
 	String trimmedStr = line.trim();
@@ -283,7 +295,7 @@ public class Utilities {
 		}
 	    }
 	}
-	
+
 	double result = (1.0 * intersection) / idealNSize;
 
 	return result;

@@ -105,6 +105,7 @@ public class Main {
 	    this.stopListFilePath = prop.getProperty("stoplist");
 	    this.stopListFilePath = (this.stopListFilePath == null || this.stopListFilePath.isEmpty()) ? DEFUALT_STOPLIST_PATH
 		    : this.stopListFilePath;
+	    this.stoplist = Utilities.parseFileIntoTokens(this.stopListFilePath);
 
 	    if (this.queryFilePath == null || this.docsFilePath == null || this.outputFilePath == null
 		    || this.retriveAlgorithmPath == null) {
