@@ -45,14 +45,6 @@ public class BasicIndexer {
 	}
     }
 
-    public Document createDocument(int docId, String content) {
-	Document newDoc = new Document();
-	newDoc.add(new TextField("content", content, Field.Store.YES));
-	newDoc.add(new LongField("id", docId, Field.Store.YES));
-
-	return newDoc;
-    }
-
     public void index(Document doc) throws IOException {
 	if (this.writer != null) {
 	    this.writer.addDocument(doc);

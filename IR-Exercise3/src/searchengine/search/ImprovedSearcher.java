@@ -9,10 +9,14 @@ import java.util.List;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.TokenStream;
 import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.Analyzer.TokenStreamComponents;
 import org.apache.lucene.analysis.core.LowerCaseFilter;
 import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.core.WhitespaceTokenizer;
+import org.apache.lucene.analysis.en.PorterStemFilter;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.standard.StandardFilter;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
@@ -22,6 +26,7 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
+import searchengine.index.ImprovedIndexer;
 import utils.Utilities;
 
 public class ImprovedSearcher extends BasicSearcher {
@@ -73,17 +78,17 @@ public class ImprovedSearcher extends BasicSearcher {
 
     @Override
     protected void initAnalyzer() {
+    	/*CharArraySet set = new CharArraySet(Version.LUCENE_47, stopwords, true);
+    	this.analyzer = new StandardAnalyzer(Version.LUCENE_47, set);
+    	*/
 	Analyzer analyzer = new Analyzer() {
 	    @Override
 	    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-		Tokenizer source = new WhitespaceTokenizer(Version.LUCENE_47, reader);
-		TokenStream token = new StandardFilter(Version.LUCENE_47, source);
-		token = new LowerCaseFilter(Version.LUCENE_47, token);
-		// token = new ASCIIFoldingFilter(token);
-		// token = new NGramTokenFilter(Version.LUCENE_47, token, 2, 20);
-		token = new StopFilter(Version.LUCENE_47, token, new CharArraySet(Version.LUCENE_47,
-			ImprovedSearcher.this.stopwords, true));
-		return new TokenStreamComponents(source, token);
+	    	Tokenizer source = new StandardTokenizer(Version.LUCENE_47, reader);
+	    	TokenStream token = new LowerCaseFilter(Version.LUCENE_47, source); 
+	    	token = new StopFilter(Version.LUCENE_47, token, new CharArraySet(Version.LUCENE_47,
+	    			ImprovedSearcher.this.stopwords, true));
+	    	return new TokenStreamComponents(source, new PorterStemFilter(token));
 	    }
 	};
 	
