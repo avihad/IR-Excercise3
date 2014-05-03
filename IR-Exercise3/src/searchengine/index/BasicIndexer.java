@@ -11,23 +11,18 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.LongField;
-import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
 public class BasicIndexer {
-	protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but",
-			   "by", "for", "if", "in", "into", "is", "it", "no", "not",
-			   "of", "on", "or", "such", "that", "the", "their", "then",
-			   "there", "these", "they", "this", "to", "was", "will",
-			   "with");
-	
+    protected List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by", "for",
+	    "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then",
+	    "there", "these", "they", "this", "to", "was", "will", "with");
+
     protected IndexWriter writer;
-    private Directory     luceneDir;
+    private Directory luceneDir;
 
     public BasicIndexer(Directory luceneDir) {
 	this.luceneDir = luceneDir;
@@ -43,6 +38,13 @@ public class BasicIndexer {
 		e.printStackTrace();
 	    }
 	}
+    }
+
+    protected Analyzer createAnalzyer() {
+	CharArraySet set = new CharArraySet(Version.LUCENE_47, this.stopwords, true);
+	Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_47, set);
+
+	return analyzer;
     }
 
     public void index(Document doc) throws IOException {
@@ -68,51 +70,32 @@ public class BasicIndexer {
 
 	return initResult;
     }
-    
-    protected Analyzer createAnalzyer()
-    {
-    	CharArraySet set = new CharArraySet(Version.LUCENE_47, stopwords, true);
-    	Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_47, set);
-    	
-    	return analyzer;
+
+    public void setStopWords(List<String> stopWords) {
+	this.stopwords = stopWords;
     }
-    
-    public boolean setStopWords(List<String> stopWords)
-    {
-    	boolean result = false;
-    	
-    	if(stopWords != null)
-    	{
-    		this.stopwords.clear();
-    		result = this.stopwords.addAll(stopWords);
-    	}
-    	
-    	return result;
-    }
-    
-    public void TestAnalyzer()
-	{
-		try
-		{
+
+    public void TestAnalyzer() {
+	try {
 	    Analyzer analyzer = createAnalzyer();
-	    TokenStream stream = analyzer.tokenStream("myfield", new StringReader("hello there three word should not be present"));
+	    TokenStream stream = analyzer.tokenStream("myfield", new StringReader(
+		    "hello there three word should not be present"));
 
 	    CharTermAttribute termAtt = stream.addAttribute(CharTermAttribute.class);
-	    
+
 	    try {
-	        stream.reset();
-	      
-	        while (stream.incrementToken()) {
-	          System.out.println(termAtt.toString());
-	        }
-	      
-	        stream.end();
-	      } finally {
-	        stream.close();
-	      }
-		}catch(Exception ex)
-		{
-			
+		stream.reset();
+
+		while (stream.incrementToken()) {
+		    System.out.println(termAtt.toString());
 		}
+
+		stream.end();
+	    } finally {
+		stream.close();
+	    }
+	} catch (Exception ex) {
+
 	}
+    }
 }

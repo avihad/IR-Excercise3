@@ -27,9 +27,9 @@ import entities.IRDoc;
 
 public class BasicSearcher {
 
-    protected final List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by",
-	    "for", "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their",
-	    "then", "there", "these", "they", "this", "to", "was", "will", "with");
+    protected List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by", "for",
+	    "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then",
+	    "there", "these", "they", "this", "to", "was", "will", "with");
 
     private Directory luceneDir;
     protected IndexSearcher searcher;
@@ -100,15 +100,8 @@ public class BasicSearcher {
 	return docs;
     }
 
-    public boolean setStopWords(List<String> stopWords) {
-	boolean result = false;
-
-	if (stopWords != null) {
-	    this.stopwords.clear();
-	    result = this.stopwords.addAll(stopWords);
-	}
-
-	return result;
+    public void setStopWords(List<String> stopWords) {
+	this.stopwords = stopWords;
     }
 
     public void TestAnalyzer() {
