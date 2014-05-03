@@ -21,158 +21,143 @@ import entities.SearchResult;
 
 public class Utilities {
 
-	public static final List<String> MONTHS = Arrays.asList("January",
-			"February", "March", "April", "May", "July", "June", "August",
-			"September", "October", "November", "December");
+    public static final List<String> MONTHS = Arrays.asList("January", "February", "March", "April", "May", "July",
+	    "June", "August", "September", "October", "November", "December");
 
-	public static final List<String> NOT_KEYWORDS = Arrays.asList("JB", "CACM");
+    public static final List<String> NOT_KEYWORDS = Arrays.asList("JB", "CACM");
 
-	public static final List<String> REFERENCES = Arrays.asList("references",
-			"reference", "ref", "ref.");
+    public static final List<String> REFERENCES = Arrays.asList("references", "reference", "ref", "ref.");
 
-	/**
-	 * extract all the dates from the content in the format "JB <DATE> AM\PM"
-	 * */
-	public static List<String> extractDates(String content) {
+    /**
+     * extract all the dates from the content in the format "JB <DATE> AM\PM"
+     * */
+    public static List<String> extractDates(String content) {
 
-		List<String> dates = new ArrayList<String>();
-		// FIXME: change to the correct length
-		final int dateMaxLength = 30;
-		int startIndex = content.indexOf("JB");
-		int pmEndIndex = 0;
-		int amEndIndex = 0;
+	List<String> dates = new ArrayList<String>();
+	// FIXME: change to the correct length
+	final int dateMaxLength = 30;
+	int startIndex = content.indexOf("JB");
+	int pmEndIndex = 0;
+	int amEndIndex = 0;
 
-		while (startIndex > -1 && pmEndIndex > -1) {
-			pmEndIndex = content.indexOf("PM", startIndex + 1);
-			if (pmEndIndex > -1 && (pmEndIndex - startIndex) <= dateMaxLength) {
-				dates.add(content.substring(startIndex + 2, pmEndIndex - 1));
-			} else {
-				amEndIndex = content.indexOf("AM", startIndex + 1);
-				if (amEndIndex > -1
-						&& (amEndIndex - startIndex) <= dateMaxLength) {
-					dates.add(content.substring(startIndex + 2, amEndIndex - 1));
-				}
-
-			}
-			startIndex = content.indexOf("JB", startIndex + 1);
-		}
-		return dates;
-	}
-
-	public static List<String> extractKeywords(String content) {
-		List<String> keywords = new ArrayList<String>();
-		String[] tokens = content.split(" ");
-
-		String tmp;
-		for (String token : tokens) {
-			tmp = token.toUpperCase();
-			if (token.length() > 1 && token.equals(tmp)) {
-				keywords.add(token);
-			}
-		}
-		keywords.removeAll(Utilities.NOT_KEYWORDS);
-		return keywords;
-	}
-
-	public static List<String> extractReferences(String content) {
-		List<String> references = new ArrayList<String>();
-		String[] tokens = content.split(" ");
-
-		boolean refFound = false;
-
-		for (String ref : references) {
-			if (refFound) {
-				break;
-			}
-
-			for (int i = 0; i < tokens.length; i++) {
-				if (refFound) {
-					if (isNumeric(tokens[i])) {
-						references.add(tokens[i]);
-					} else {
-						break;
-					}
-				} else if (tokens[i].equalsIgnoreCase(ref)) {
-					refFound = true;
-				}
-			}
-		}
-		return references;
-	}
-
-	public static String GenericJoinToStr(Collection<?> c, String join) {
-		StringBuilder sb = new StringBuilder();
-
-		if (c != null && !c.isEmpty()) {
-			Iterator<?> iter = c.iterator();
-
-			sb.append(iter.next());
-
-			while (iter.hasNext()) {
-				sb.append(join);
-				sb.append(iter.next());
-			}
+	while (startIndex > -1 && pmEndIndex > -1) {
+	    pmEndIndex = content.indexOf("PM", startIndex + 1);
+	    if (pmEndIndex > -1 && (pmEndIndex - startIndex) <= dateMaxLength) {
+		dates.add(content.substring(startIndex + 2, pmEndIndex - 1));
+	    } else {
+		amEndIndex = content.indexOf("AM", startIndex + 1);
+		if (amEndIndex > -1 && (amEndIndex - startIndex) <= dateMaxLength) {
+		    dates.add(content.substring(startIndex + 2, amEndIndex - 1));
 		}
 
-		return sb.toString();
+	    }
+	    startIndex = content.indexOf("JB", startIndex + 1);
+	}
+	return dates;
+    }
+
+    public static List<String> extractKeywords(String content) {
+	List<String> keywords = new ArrayList<String>();
+	String[] tokens = content.split(" ");
+
+	String tmp;
+	for (String token : tokens) {
+	    tmp = token.toUpperCase();
+	    if (token.length() > 1 && token.equals(tmp)) {
+		keywords.add(token);
+	    }
+	}
+	keywords.removeAll(Utilities.NOT_KEYWORDS);
+	return keywords;
+    }
+
+    public static List<String> extractReferences(String content) {
+	List<String> references = new ArrayList<String>();
+	String[] tokens = content.split(" ");
+
+	boolean refFound = false;
+
+	for (String ref : references) {
+	    if (refFound) {
+		break;
+	    }
+
+	    for (int i = 0; i < tokens.length; i++) {
+		if (refFound) {
+		    if (isNumeric(tokens[i])) {
+			references.add(tokens[i]);
+		    } else {
+			break;
+		    }
+		} else if (tokens[i].equalsIgnoreCase(ref)) {
+		    refFound = true;
+		}
+	    }
+	}
+	return references;
+    }
+
+    public static String GenericJoinToStr(Collection<?> c, String join) {
+	StringBuilder sb = new StringBuilder();
+
+	if (c != null && !c.isEmpty()) {
+	    Iterator<?> iter = c.iterator();
+
+	    sb.append(iter.next());
+
+	    while (iter.hasNext()) {
+		sb.append(join);
+		sb.append(iter.next());
+	    }
 	}
 
-	public static IRDoc getMyDocFromStr(String str) {
-		IRDoc doc = null;
-		if (str != null && !str.isEmpty()) {
-			String trimmedStr = str.trim();
-			int firstWS = trimmedStr.indexOf(' ');
+	return sb.toString();
+    }
 
-			// check that line contains a doc id (first word in doc) and a
-			// non-empty content
-			if (firstWS > -1 && trimmedStr.length() > (firstWS + 1)) {
-				try {
-					String docId = trimmedStr.substring(0, firstWS);
-					int nDocId = Integer.parseInt(docId);
+    public static IRDoc getMyDocFromStr(String str) {
+	IRDoc doc = null;
+	if (str != null && !str.isEmpty()) {
+	    String trimmedStr = str.trim();
+	    int firstWS = trimmedStr.indexOf(' ');
 
-					String content = trimmedStr.substring(firstWS + 1);
+	    // check that line contains a doc id (first word in doc) and a
+	    // non-empty content
+	    if (firstWS > -1 && trimmedStr.length() > (firstWS + 1)) {
+		try {
+		    String docId = trimmedStr.substring(0, firstWS);
+		    int nDocId = Integer.parseInt(docId);
 
-					doc = DocFactory.instance.create(nDocId, content);
+		    String content = trimmedStr.substring(firstWS + 1);
 
-				} catch (NumberFormatException nfe) {
-					nfe.printStackTrace();
-				}
+		    doc = DocFactory.instance.create(nDocId, content);
 
-			}
+		} catch (NumberFormatException nfe) {
+		    nfe.printStackTrace();
 		}
 
-		return doc;
+	    }
 	}
 
-	private static String getOutputRow(String qID, String docID, float score) {
-		StringBuilder sb = new StringBuilder();
-		sb.append("q");
-		sb.append(qID);
-		sb.append(",");
+	return doc;
+    }
 
-		if (docID == null) {
-			sb.append("dummy");
-		} else {
-			sb.append("doc");
-			sb.append(docID);
-		}
-		sb.append(",");
-		sb.append(String.format("%.3f", score));
-		sb.append("\n");
+    private static String getOutputRow(String qID, int docID, float score) {
+	StringBuilder sb = new StringBuilder();
+	sb.append("q");
+	sb.append(qID);
+	sb.append(",");
 
-		return sb.toString();
-
+	if (docID == -1) {
+	    sb.append("dummy");
+	} else {
+	    sb.append("doc");
+	    sb.append(docID);
 	}
+	sb.append(",");
+	sb.append(String.format("%.3f", score));
+	sb.append("\n");
 
-	/**
-	 * Parsing the truth file for the computation of the precision of our
-	 * algorithms
-	 * 
-	 * @param filePath
-	 *            - the path to the truth fie
-	 * */
-	public static List<QueryIdealResult> parseTruthLists(String filePath) {
-		Map<Integer, QueryIdealResult> truthMap = new HashMap<Integer, QueryIdealResult>();
+	return sb.toString();
 
     }
 
