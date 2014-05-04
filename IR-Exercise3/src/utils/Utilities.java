@@ -188,7 +188,7 @@ public class Utilities {
 
 	Map<Integer, Integer> rankByDocId = rankedDocListToMap(calculatedResults);
 
-	for (int i = 0; i < idealResults.getSize(); i++) {
+	for (int i = 1; i <= idealResults.getSize(); i++) {
 	    // get docId at rank i from relevant results
 	    int curDocId = idealResults.getDocByIndex(i);
 
@@ -287,7 +287,7 @@ public class Utilities {
 	int intersection = 0;
 	int idealNSize = (n > idealResults.getSize()) ? idealResults.getSize() : n;
 
-	for (int i = 0; i < idealNSize; i++) {
+	for (int i = 1; i <= idealNSize; i++) {
 	    for (int j = 0; j < calculatedNResults.size(); j++) {
 		if (calculatedNResults.get(j) == idealResults.getDocByIndex(i)) {
 		    intersection++;
@@ -355,7 +355,7 @@ public class Utilities {
 	Map<Integer, Integer> rankByDocId = new HashMap<Integer, Integer>();
 
 	for (int i = 0; i < orderedList.size(); i++) {
-	    rankByDocId.put(orderedList.get(i), i);
+	    rankByDocId.put(orderedList.get(i), i+1);
 	}
 
 	return rankByDocId;
