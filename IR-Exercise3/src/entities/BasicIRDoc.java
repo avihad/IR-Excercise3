@@ -15,7 +15,7 @@ public class BasicIRDoc implements IRDoc {
     public static IRDoc create(int docId, String content) {
     	Pair<String, List<Integer>> contentReferencesPair = sparateContentAndReferences(content);
     	List<Integer> docReferences = contentReferencesPair.second;
-    	String docContent = contentReferencesPair.first;
+    	String docContent = content;
     	
 	return new BasicIRDoc(docId, docContent, docReferences);
     }

@@ -63,15 +63,19 @@ public class ImprovedIRDoc extends BasicIRDoc {
 	Field f;
 
 	f = new TextField("references", Utilities.GenericJoinToStr(this.references, " "), Field.Store.YES);
-	f.setBoost(1.0f * this.boost);
+	f.setBoost(this.boost);
 	newDoc.add(f);
 
 	f = new TextField("keywords", Utilities.GenericJoinToStr(this.keywords, " "), Field.Store.YES);
-	f.setBoost(2.0f * this.boost);
+	f.setBoost(this.boost);
+	newDoc.add(f);
+	
+	f = new TextField("title", this.title, Field.Store.YES);
+	f.setBoost(this.boost);
 	newDoc.add(f);
 
 	f = new TextField("dates", Utilities.GenericJoinToStr(this.dates, " "), Field.Store.YES);
-	f.setBoost(1.5f * this.boost);
+	f.setBoost(this.boost);
 	newDoc.add(f);
 
 	return newDoc;

@@ -32,6 +32,7 @@ public class ImprovedSearcher extends BasicSearcher {
     private static final float DATES_BOOST = 3.0f;
     private static final float REF_BOOST = 2.0f;
     private static final float KEYWORD_BOOST = 2.0f;
+    private static final float TITLE_BOOST = 2.0f;
 
     public ImprovedSearcher(Directory luceneDir) {
 	super(luceneDir);
@@ -74,6 +75,13 @@ public class ImprovedSearcher extends BasicSearcher {
 	if (keywords != null && keywords.size() > 0) {
 	    appendFieldToQuery(queryBuilder, "keywords", QueryParser.escape(Utilities.GenericJoinToStr(keywords, " ")),
 		    KEYWORD_BOOST);
+	}
+	
+	String title = doc.getTitle();
+	if(title != null && !title.isEmpty())
+	{
+		appendFieldToQuery(queryBuilder, "title", QueryParser.escape(title),
+			    TITLE_BOOST);
 	}
 
 	String query = queryBuilder.toString();
