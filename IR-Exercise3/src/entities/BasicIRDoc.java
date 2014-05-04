@@ -19,13 +19,41 @@ public class BasicIRDoc implements IRDoc {
     	
 	return new BasicIRDoc(docId, docContent, docReferences);
     }
-   
-    private final int    id;
+
+    private static List<Integer> parseReferences(String referencesString) {
+	List<Integer> references = new ArrayList<Integer>();
+	String[] refStrings = referencesString.split(",");
+
+	for (String reference : refStrings) {
+	    try {
+		int ref = Integer.parseInt(reference.trim());
+		references.add(ref);
+	    } catch (Exception ex) {
+	    }
+	}
+
+	return references;
+    }
+
+    protected static Pair<String, List<Integer>> sparateContentAndReferences(String content) {
+
+	String fixedContent = content;
+	List<Integer> references = Collections.EMPTY_LIST;
+	String referenceIndication = "References:";
+	int referencesIndex = content.lastIndexOf(referenceIndication);
+	if (referencesIndex > 0) {
+	    fixedContent = content.substring(0, referencesIndex);
+	    references = parseReferences(content.substring(referencesIndex + referenceIndication.length()));
+	}
+	return Pair.of(fixedContent, references);
+    }
+
+    private final int id;
 
     private final String content;
-    
+
     protected float boost;
-    
+
     protected final List<Integer> references;
 
     protected BasicIRDoc(int docId, String content, List<Integer> references) {
@@ -34,50 +62,23 @@ public class BasicIRDoc implements IRDoc {
 	this.references = Collections.unmodifiableList(references);
 	this.boost = 1.0f;
     }
-    
-    protected static Pair<String, List<Integer>> sparateContentAndReferences(String content) {
 
-    	String fixedContent = content;
-    	List<Integer> references = Collections.EMPTY_LIST;
-    	String referenceIndication = "References:";
-    	int referencesIndex = content.lastIndexOf(referenceIndication);
-    	if (referencesIndex > 0) {
-    	    fixedContent = content.substring(0, referencesIndex);
-    	    references = parseReferences(content.substring(referencesIndex + referenceIndication.length()));
-    	}
-    	return Pair.of(fixedContent, references);
-        }
-
-    private static List<Integer> parseReferences(String referencesString) {
-	List<Integer> references = new ArrayList<Integer>();
-	String[] refStrings = referencesString.split(",");
-
-		for (String reference : refStrings) {
-			try {
-				int ref = Integer.parseInt(reference.trim());
-				references.add(ref);
-			} catch (Exception ex) {
-			}
-		}
-
-	return references;
-    }
-    
-    public void setDocBoost(float boost)
-    {
-    	this.boost = boost;
+    @Override
+    public BasicIRDoc Clone() {
+	BasicIRDoc newDoc = new BasicIRDoc(this.getId(), this.getContent(), this.getReferences());
+	return newDoc;
     }
 
     @Override
     public Document createDocument() {
 	Document newDoc = new Document();
-	
+
 	Field f;
-	
+
 	f = new TextField("content", this.content, Field.Store.YES);
 	f.setBoost(this.boost);
 	newDoc.add(f);
-	
+
 	f = new LongField("id", this.id, Field.Store.YES);
 	newDoc.add(f);
 
@@ -94,15 +95,15 @@ public class BasicIRDoc implements IRDoc {
     public int getId() {
 	return this.id;
     }
-    
+
+    @Override
     public List<Integer> getReferences() {
-    	return this.references;
-        }
-    
-    public BasicIRDoc Clone()
-    {
-    	BasicIRDoc newDoc = new BasicIRDoc(this.getId(), this.getContent(), this.getReferences());
-    	return newDoc;
+	return this.references;
+    }
+
+    @Override
+    public void setDocBoost(float boost) {
+	this.boost = boost;
     }
 
 }

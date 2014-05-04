@@ -194,7 +194,8 @@ public class Main {
 		}
 		sb = new StringBuffer();
 
-		double ndcgValue = queryIdealResult.calcNDCG(docsIds);
+		List<Integer> docsSubList = docsIds.size() >= 10 ? docsIds.subList(0, 10) : docsIds;
+		double ndcgValue = queryIdealResult.calcNDCG(docsSubList);
 		double precisionAt5 = Utilities.PrecisionAtN(5, docsIds, queryIdealResult);
 		double precisionAt10 = Utilities.PrecisionAtN(10, docsIds, queryIdealResult);
 		double meanAveragePrecision = Utilities.meanAveragePrecision(docsIds, queryIdealResult);
