@@ -117,8 +117,10 @@ public class BasicSearchEngine implements ISearchEngine {
 	Integer indexedDocsCount = 0;
 
 	if (indexer != null) {
+		createDocReferencesMap(documents);
 	    Document doc;
 	    for (IRDoc myDoc : documents) {
+	    	myDoc = setDocReferences(myDoc);
 		doc = myDoc.createDocument();
 
 		if (doc != null) {

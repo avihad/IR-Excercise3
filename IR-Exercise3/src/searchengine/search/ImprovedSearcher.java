@@ -76,7 +76,7 @@ public class ImprovedSearcher extends BasicSearcher {
 		    KEYWORD_BOOST);
 	}
 
-	String query = queryBuilder.toString();//!@#!#.replace(" or ", " OR ").replace(" and ", " AND ");
+	String query = queryBuilder.toString();
 
 	return query;
     }
