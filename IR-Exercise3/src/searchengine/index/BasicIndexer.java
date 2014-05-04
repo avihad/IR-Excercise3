@@ -16,6 +16,9 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
+/**
+ * Simple indexer that index {@link SimpleIRDoc}
+ * */
 public class BasicIndexer {
     protected List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by", "for",
 	    "if", "in", "into", "is", "it", "no", "not", "of", "on", "or", "such", "that", "the", "their", "then",
@@ -40,6 +43,9 @@ public class BasicIndexer {
 	}
     }
 
+    /**
+     * return a standard analyzer with stop word filter
+     * */
     protected Analyzer createAnalzyer() {
 	CharArraySet set = new CharArraySet(Version.LUCENE_47, this.stopwords, true);
 	Analyzer analyzer = new StandardAnalyzer(Version.LUCENE_47, set);
@@ -47,6 +53,9 @@ public class BasicIndexer {
 	return analyzer;
     }
 
+    /**
+     * Index a document
+     * */
     public void index(Document doc) throws IOException {
 	if (this.writer != null) {
 	    this.writer.addDocument(doc);

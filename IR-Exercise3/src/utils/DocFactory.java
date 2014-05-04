@@ -5,6 +5,9 @@ import entities.EngineStrategy;
 import entities.IRDoc;
 import entities.ImprovedIRDoc;
 
+/**
+ * Factory Class for creating IRDocs
+ * */
 public enum DocFactory {
 
     instance;
@@ -13,11 +16,11 @@ public enum DocFactory {
 
     public IRDoc create(int id, String content) {
 	switch (this.strategy) {
-	    case Improved:
-		return ImprovedIRDoc.create(id, content);
-	    case Basic:
-	    default:
-		return BasicIRDoc.create(id, content);
+	case Improved:
+	    return ImprovedIRDoc.create(id, content);
+	case Basic:
+	default:
+	    return BasicIRDoc.create(id, content);
 	}
     }
 

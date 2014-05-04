@@ -56,6 +56,11 @@ public class Main {
 	this.queryToResultsMap = new HashMap<Integer, List<SearchResult>>();
     }
 
+    /**
+     * Parse all the documents from the file path and create the IRDoc from the factory {@link DocFactory}
+     * 
+     * @param path
+     * */
     private List<IRDoc> createDocuments(String path) {
 	List<IRDoc> parsedDocs = new LinkedList<IRDoc>();
 
@@ -68,6 +73,9 @@ public class Main {
 	return parsedDocs;
     }
 
+    /**
+     * Read all the documents from the docsFilePath and index them using our custom search engine
+     * */
     private void indexDocuments() {
 
 	System.out.println("Info: Parsing documents from the input path: " + this.docsFilePath);
@@ -84,6 +92,9 @@ public class Main {
 
     }
 
+    /**
+     * Read and parse the property file input and initiate the currect algorithms for the next phases
+     * */
     private boolean initVariables() {
 
 	boolean success = false;
@@ -135,6 +146,10 @@ public class Main {
 	return success;
     }
 
+    /**
+     * Parse all the query using the same parsed of the documents, search each of them with our search engine and store
+     * them into the queryToResultMap and output them into the output file outputFilePath
+     * */
     private void search() {
 
 	System.out.println("Info: Parsing the query's from file: " + this.queryFilePath);
@@ -156,6 +171,9 @@ public class Main {
 	}
     }
 
+    /**
+     * The starting method calling all the phases of the work
+     * */
     public void Start() {
 
 	if (!initVariables()) {
@@ -174,6 +192,10 @@ public class Main {
 	System.out.println("Info: Finished searching");
     }
 
+    /**
+     * Read the truth file from truthFilePath generate all the testing parameters: Percision5 10 , NDCG, Mean Average
+     * Percision and output them into testing.csv
+     * */
     private void testing() {
 
 	BufferedWriter bw = null;

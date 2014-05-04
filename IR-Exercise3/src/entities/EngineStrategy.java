@@ -1,5 +1,8 @@
 package entities;
 
+/**
+ * Enum represent the strategy of the search engine
+ * */
 public enum EngineStrategy {
     Basic("basic"), Improved("improved");
 

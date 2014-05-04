@@ -23,8 +23,12 @@ import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.util.Version;
 
+import entities.BasicIRDoc;
 import entities.IRDoc;
 
+/**
+ * Search for {@link BasicIRDoc}
+ * */
 public class BasicSearcher {
 
     protected List<String> stopwords = Arrays.asList("a", "an", "and", "are", "as", "at", "be", "but", "by", "for",

@@ -27,6 +27,9 @@ import utils.Utilities;
 import entities.IRDoc;
 import entities.ImprovedIRDoc;
 
+/**
+ * Search for {@link ImprovedIRDoc} and setting boosts for special fields in the IRDoc
+ * */
 public class ImprovedSearcher extends BasicSearcher {
 
     private static final float DATES_BOOST = 3.0f;
@@ -38,6 +41,9 @@ public class ImprovedSearcher extends BasicSearcher {
 	super(luceneDir);
     }
 
+    /**
+     * Helper to append special field to a query string with a boost for similarity
+     * */
     private void appendFieldToQuery(StringBuilder str, String field, String value, float boost) {
 	str.append(" OR ");
 	str.append(field);
@@ -51,6 +57,10 @@ public class ImprovedSearcher extends BasicSearcher {
 	}
     }
 
+    /**
+     * Generate improved query from the special fields extracted in {@link ImprovedIRDoc} and give them boost for
+     * similarity
+     * */
     private String improveQuery(ImprovedIRDoc doc) {
 	StringBuilder queryBuilder = new StringBuilder(QueryParser.escape(doc.getContent()));
 
@@ -76,12 +86,10 @@ public class ImprovedSearcher extends BasicSearcher {
 	    appendFieldToQuery(queryBuilder, "keywords", QueryParser.escape(Utilities.GenericJoinToStr(keywords, " ")),
 		    KEYWORD_BOOST);
 	}
-	
+
 	String title = doc.getTitle();
-	if(title != null && !title.isEmpty())
-	{
-		appendFieldToQuery(queryBuilder, "title", QueryParser.escape(title),
-			    TITLE_BOOST);
+	if (title != null && !title.isEmpty()) {
+	    appendFieldToQuery(queryBuilder, "title", QueryParser.escape(title), TITLE_BOOST);
 	}
 
 	String query = queryBuilder.toString();
@@ -109,6 +117,9 @@ public class ImprovedSearcher extends BasicSearcher {
 	this.analyzer = analyzer;
     }
 
+    /**
+     * Search for an IRDoc
+     * */
     @Override
     @SuppressWarnings("unchecked")
     public List<ScoreDoc> search(IRDoc irDoc) throws IOException {

@@ -2,6 +2,9 @@ package entities;
 
 import java.util.Comparator;
 
+/**
+ * Comparator for sorting the result of the query searching by score and then by docId
+ * */
 public class SearchResultComparator implements Comparator<SearchResult> {
 
     @Override

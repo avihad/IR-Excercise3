@@ -6,7 +6,11 @@ import searchengine.index.BasicIndexer;
 import searchengine.index.ImprovedIndexer;
 import searchengine.search.BasicSearcher;
 import searchengine.search.ImprovedSearcher;
+import entities.ImprovedIRDoc;
 
+/**
+ * Search engine using {@link ImprovedIndexer} and {@link ImprovedSearcher} to index and search {@link ImprovedIRDoc}
+ * */
 public class ImprovedSearchEngine extends BasicSearchEngine {
 
     public ImprovedSearchEngine(String indexDir) throws IOException {

@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Query result as read from the truth file, in this class we also calculate NDCG.
+ * */
 public class QueryIdealResult {
 
     private final int queryId;
@@ -38,6 +41,11 @@ public class QueryIdealResult {
 
     }
 
+    /**
+     * Calculating the DCG value of docRank
+     * 
+     * @param docRank
+     * */
     private double calcDCG(List<Integer> docRank) {
 
 	if (docRank.isEmpty()) {
@@ -52,6 +60,11 @@ public class QueryIdealResult {
 	return DCG;
     }
 
+    /**
+     * Calculating the NDCG value of docRank
+     * 
+     * @param docRank
+     * */
     public double calcNDCG(List<Integer> docList) {
 	List<Integer> docRank = new ArrayList<Integer>();
 	int temp;

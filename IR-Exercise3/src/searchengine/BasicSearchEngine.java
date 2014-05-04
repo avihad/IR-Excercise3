@@ -15,10 +15,14 @@ import org.apache.lucene.store.FSDirectory;
 
 import searchengine.index.BasicIndexer;
 import searchengine.search.BasicSearcher;
+import entities.BasicIRDoc;
 import entities.EngineStrategy;
 import entities.IRDoc;
 import entities.SearchResult;
 
+/**
+ * Search engine using {@link BasicIndexer} and {@link BasicSearcher} to search and index {@link BasicIRDoc}
+ * */
 public class BasicSearchEngine implements ISearchEngine {
 
     public static ISearchEngine createEngine(EngineStrategy strategy) throws IOException {
@@ -117,10 +121,10 @@ public class BasicSearchEngine implements ISearchEngine {
 	Integer indexedDocsCount = 0;
 
 	if (indexer != null) {
-		createDocReferencesMap(documents);
+	    createDocReferencesMap(documents);
 	    Document doc;
 	    for (IRDoc myDoc : documents) {
-	    	myDoc = setDocReferences(myDoc);
+		myDoc = setDocReferences(myDoc);
 		doc = myDoc.createDocument();
 
 		if (doc != null) {

@@ -1,5 +1,9 @@
 package utils;
 
+/**
+ * 
+ * Simple data structure represent a pair
+ * */
 public class Pair<A, B> {
     private static boolean equals(Object paramObject1, Object paramObject2) {
 	return (((paramObject1 == null) && (paramObject2 == null)) || ((paramObject1 != null) && (paramObject1

@@ -11,15 +11,25 @@ import org.apache.lucene.document.TextField;
 
 import utils.Pair;
 
+/**
+ * Basic IRDoc is a simple {@link IRDoc} implementation that separate the document into id and content
+ * */
 public class BasicIRDoc implements IRDoc {
+
+    /**
+     * Factory method - convinced method to create anew BasicIRDoc
+     * */
     public static IRDoc create(int docId, String content) {
-    	Pair<String, List<Integer>> contentReferencesPair = sparateContentAndReferences(content);
-    	List<Integer> docReferences = contentReferencesPair.second;
-    	String docContent = content;
-    	
+	Pair<String, List<Integer>> contentReferencesPair = sperateContentAndReferences(content);
+	List<Integer> docReferences = contentReferencesPair.second;
+	String docContent = content;
+
 	return new BasicIRDoc(docId, docContent, docReferences);
     }
 
+    /**
+     * Parse a string into a list that contains reference numbers
+     * */
     private static List<Integer> parseReferences(String referencesString) {
 	List<Integer> references = new ArrayList<Integer>();
 	String[] refStrings = referencesString.split(",");
@@ -35,7 +45,10 @@ public class BasicIRDoc implements IRDoc {
 	return references;
     }
 
-    protected static Pair<String, List<Integer>> sparateContentAndReferences(String content) {
+    /**
+     * Separate the content and the reference's from the doc string
+     * */
+    protected static Pair<String, List<Integer>> sperateContentAndReferences(String content) {
 
 	String fixedContent = content;
 	List<Integer> references = Collections.EMPTY_LIST;

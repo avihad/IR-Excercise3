@@ -19,6 +19,9 @@ import entities.IRDoc;
 import entities.QueryIdealResult;
 import entities.SearchResult;
 
+/**
+ * lost of utilities and helpers for parsing and manipulating strings and documents
+ * */
 public class Utilities {
 
     public static final List<String> MONTHS = Arrays.asList("January", "February", "March", "April", "May", "July",
@@ -56,6 +59,11 @@ public class Utilities {
 	return dates;
     }
 
+    /**
+     * Extract all the word with Capital letters in the string content
+     * 
+     * @param content
+     * */
     public static List<String> extractKeywords(String content) {
 	List<String> keywords = new ArrayList<String>();
 	String[] tokens = content.split(" ");
@@ -71,6 +79,11 @@ public class Utilities {
 	return keywords;
     }
 
+    /**
+     * Extract all the references in the string content.
+     * 
+     * @param content
+     * */
     public static List<String> extractReferences(String content) {
 	List<String> references = new ArrayList<String>();
 	String[] tokens = content.split(" ");
@@ -97,6 +110,9 @@ public class Utilities {
 	return references;
     }
 
+    /**
+     * Concatenate all the objects in the collection c to the string join
+     * */
     public static String GenericJoinToStr(Collection<?> c, String join) {
 	StringBuilder sb = new StringBuilder();
 
@@ -114,6 +130,11 @@ public class Utilities {
 	return sb.toString();
     }
 
+    /**
+     * Create an IRDoc from string str
+     * 
+     * @param str
+     * */
     public static IRDoc getMyDocFromStr(String str) {
 	IRDoc doc = null;
 	if (str != null && !str.isEmpty()) {
@@ -141,6 +162,9 @@ public class Utilities {
 	return doc;
     }
 
+    /**
+     * Helper to generate a string to output by qID , docID and score
+     * */
     private static String getOutputRow(String qID, int docID, float score) {
 	StringBuilder sb = new StringBuilder();
 	sb.append("q");
@@ -161,6 +185,9 @@ public class Utilities {
 
     }
 
+    /**
+     * Check if string str is an Integer
+     * */
     public static boolean isNumeric(String str) {
 	boolean result = false;
 	try {
@@ -207,6 +234,11 @@ public class Utilities {
 	return map;
     }
 
+    /**
+     * Utility that read a file an return a list of tokens separate by spaces
+     * 
+     * @param filePath
+     * */
     public static List<String> parseFileIntoTokens(String filePath) {
 	List<String> tokens = new ArrayList<String>();
 	List<String> lines = Utilities.readLinesFromFile(filePath);
@@ -219,6 +251,11 @@ public class Utilities {
 
     }
 
+    /**
+     * Parse a string line into Integer ("Id") and the rest of the sting ("content")
+     * 
+     * @param line
+     * */
     private static Pair<Integer, String> parseSingleLine(String line) {
 
 	String trimmedStr = line.trim();
@@ -279,6 +316,10 @@ public class Utilities {
 
     }
 
+    /**
+     * 
+     * Calculate the percision at n from the calculatedResults using the {@link QueryIdealResult} from the truth file.
+     * */
     public static double PrecisionAtN(int n, List<Integer> calculatedResults, QueryIdealResult idealResults) {
 
 	List<Integer> calculatedNResults = (calculatedResults.size() > n) ? calculatedResults.subList(0, n)
@@ -301,6 +342,13 @@ public class Utilities {
 	return result;
     }
 
+    /**
+     * Utility that prints the search results as expected from the work into the file {@link File}
+     * 
+     * @param file
+     * @param queryID
+     * @param results
+     * */
     public static void printSearchResults(File file, String queryID, List<SearchResult> results) {
 
 	BufferedWriter writer = null;
@@ -355,7 +403,7 @@ public class Utilities {
 	Map<Integer, Integer> rankByDocId = new HashMap<Integer, Integer>();
 
 	for (int i = 0; i < orderedList.size(); i++) {
-	    rankByDocId.put(orderedList.get(i), i+1);
+	    rankByDocId.put(orderedList.get(i), i + 1);
 	}
 
 	return rankByDocId;

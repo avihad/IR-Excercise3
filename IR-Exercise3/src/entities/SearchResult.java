@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * One SerchResult return from searching a query on the documents index
+ * */
 public class SearchResult {
     public static List<Integer> extractIds(Map.Entry<Integer, List<SearchResult>> queryResult) {
 	List<Integer> docsIds = new ArrayList<Integer>();

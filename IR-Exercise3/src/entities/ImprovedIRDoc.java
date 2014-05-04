@@ -10,10 +10,17 @@ import org.apache.lucene.document.TextField;
 import utils.Pair;
 import utils.Utilities;
 
+/**
+ * Improved IRDoc is an {@link IRDoc} extends the BasocIRDoc that separate the document into id , dates, keyword and
+ * title
+ * */
 public class ImprovedIRDoc extends BasicIRDoc {
 
+    /**
+     * Factory method - convenience method for creation of ImprovedIRDoc
+     * */
     public static IRDoc create(int id, String content) {
-	Pair<String, List<Integer>> contentReferencesPair = sparateContentAndReferences(content);
+	Pair<String, List<Integer>> contentReferencesPair = sperateContentAndReferences(content);
 	List<Integer> docReferences = contentReferencesPair.second;
 	String docContent = contentReferencesPair.first;
 	String title = extractTitle(content);
@@ -69,7 +76,7 @@ public class ImprovedIRDoc extends BasicIRDoc {
 	f = new TextField("keywords", Utilities.GenericJoinToStr(this.keywords, " "), Field.Store.YES);
 	f.setBoost(this.boost);
 	newDoc.add(f);
-	
+
 	f = new TextField("title", this.title, Field.Store.YES);
 	f.setBoost(this.boost);
 	newDoc.add(f);
